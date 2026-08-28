@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حصالتي — Save Smart in KD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --pink: #f472b6;
+      --pink-dark: #ec4899;
+      --pink-light: #fce7f3;
+      --pink-soft: #fdf2f8;
+      --pink-muted: #fbcfe8;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --white: #ffffff;
+      --shadow: 0 4px 24px rgba(244, 114, 182, 0.12);
+      --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--pink-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--pink-dark); }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-ghost {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 8px 16px;
+    }
+
+    .btn-ghost:hover { color: var(--pink-dark); }
+
+    .btn-primary {
+      background: var(--pink);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--pink-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(244, 114, 182, 0.45);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--pink-dark);
+      border: 2px solid var(--pink-muted);
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-outline:hover {
+      background: var(--pink-soft);
+      border-color: var(--pink);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 48px 80px;
+      position: relative;
+    }
+
+    .hero-bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--pink-light);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .hero-bg-circle.c1 { width: 320px; height: 320px; top: -40px; right: 80px; }
+    .hero-bg-circle.c2 { width: 180px; height: 180px; bottom: 60px; right: 280px; opacity: 0.4; }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .badge {
+      display: inline-block;
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 440px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatars {
+      display: flex;
+    }
+
+    .avatars span {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .avatars span:first-child { margin-left: 0; }
+    .avatars span:nth-child(1) { background: #f9a8d4; }
+    .avatars span:nth-child(2) { background: #c084fc; }
+    .avatars span:nth-child(3) { background: #fb923c; }
+    .avatars span:nth-child(4) { background: #34d399; }
+    .avatars span:nth-child(5) { background: #60a5fa; }
+
+    .social-proof p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* ── Phone mockup ── */
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 520px;
+    }
+
+    .phone {
+      width: 260px;
+      background: white;
+      border-radius: 36px;
+      box-shadow: var(--shadow-lg), 0 0 0 8px #f1f5f9;
+      padding: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone-notch {
+      width: 80px;
+      height: 22px;
+      background: #f1f5f9;
+      border-radius: 99px;
+      margin: 0 auto 16px;
+    }
+
+    .phone-screen {
+      padding: 0 8px 16px;
+    }
+
+    .phone-greeting {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .phone-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .savings-card {
+      background: linear-gradient(135deg, var(--pink) 0%, #e879f9 100%);
+      border-radius: 16px;
+      padding: 16px;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .savings-card label {
+      font-size: 0.65rem;
+      opacity: 0.85;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .savings-card .amount {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .mini-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 36px;
+      margin-top: 12px;
+    }
+
+    .mini-chart span {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 3px;
+    }
+
+    .goals-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .goal-item {
+      margin-bottom: 10px;
+    }
+
+    .goal-item-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      margin-bottom: 4px;
+    }
+
+    .goal-bar {
+      height: 6px;
+      background: var(--pink-light);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .goal-bar-fill {
+      height: 100%;
+      background: var(--pink);
+      border-radius: 99px;
+    }
+
+    .mascot-3d {
+      position: absolute;
+      right: 0;
+      bottom: 20px;
+      z-index: 3;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 12px 24px rgba(244, 114, 182, 0.3));
+    }
+
+    .mascot-3d svg {
+      width: 120px;
+      height: 120px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .coin {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #fde68a, #fbbf24);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #92400e;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+      z-index: 1;
+    }
+
+    .coin.c1 { top: 40px; right: 20px; animation: float 2.5s ease-in-out infinite 0.3s; }
+    .coin.c2 { top: 120px; right: 60px; width: 28px; height: 28px; font-size: 0.6rem; animation: float 3.2s ease-in-out infinite 0.6s; }
+    .coin.c3 { bottom: 140px; left: 20px; animation: float 2.8s ease-in-out infinite 0.9s; }
+
+    .plant {
+      position: absolute;
+      bottom: 0;
+      left: 60px;
+      font-size: 2.5rem;
+      z-index: 1;
+    }
+
+    .dots {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 6px);
+      gap: 8px;
+      opacity: 0.3;
+    }
+
+    .dots span {
+      width: 6px;
+      height: 6px;
+      background: var(--pink);
+      border-radius: 50%;
+    }
+
+    /* ── Features ── */
+    .features {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .features-header h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .features-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      text-align: center;
+      padding: 28px 20px;
+      border-radius: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--pink-light);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── Stats ── */
+    .stats {
+      max-width: 960px;
+      margin: 0 auto 80px;
+      padding: 0 48px;
+    }
+
+    .stats-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .stat-item {
+      padding: 28px 20px;
+      text-align: center;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value .stars {
+      color: #fbbf24;
+      font-size: 0.9rem;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ── How it works ── */
+    .how-it-works {
+      background: var(--pink-soft);
+      padding: 80px 48px;
+    }
+
+    .how-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .how-inner h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .how-inner > p {
+      color: var(--text-muted);
+      margin-bottom: 48px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: left;
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--pink);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      text-align: center;
+      padding: 80px 48px;
+    }
+
+    .cta h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      font-size: 1rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid #f1f5f9;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--pink-dark);
+      text-decoration: none;
+    }
+
+    /* ── Mobile menu ── */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    @media (max-width: 960px) {
+      nav { padding: 16px 24px; }
+      .nav-links, .nav-actions .btn-ghost { display: none; }
+      .menu-toggle { display: block; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 24px 24px 60px;
+        text-align: center;
+      }
+
+      .hero p { margin-left: auto; margin-right: auto; }
+      .hero-buttons { justify-content: center; }
+      .social-proof { justify-content: center; }
+
+      .hero-visual { min-height: 420px; }
+      .mascot-3d svg { width: 90px; height: 90px; }
+
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-box { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .stat-item:nth-child(1), .stat-item:nth-child(2) { border-bottom: 1px solid #e2e8f0; }
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-box { grid-template-columns: 1fr; }
+      .stat-item { border-right: none !important; border-bottom: 1px solid #e2e8f0; }
+      .stat-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="32" cy="38" rx="22" ry="20" fill="#fbcfe8"/>
+          <path d="M14 22 L20 8 L26 20 Z" fill="#f472b6"/>
+          <path d="M38 20 L44 8 L50 22 Z" fill="#f472b6"/>
+          <path d="M18 20 L22 10 L26 20 Z" fill="#fce7f3"/>
+          <path d="M38 20 L42 10 L46 20 Z" fill="#fce7f3"/>
+          <circle cx="24" cy="36" r="3" fill="#1e293b"/>
+          <circle cx="40" cy="36" r="3" fill="#1e293b"/>
+          <circle cx="25" cy="35" r="1" fill="#fff"/>
+          <circle cx="41" cy="35" r="1" fill="#fff"/>
+          <ellipse cx="32" cy="42" rx="3" ry="2" fill="#ec4899"/>
+          <path d="M28 46 Q32 50 36 46" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <line x1="12" y1="40" x2="20" y2="39" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="12" y1="44" x2="20" y2="43" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="44" y1="39" x2="52" y2="40" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="44" y1="43" x2="52" y2="44" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      حصالتي
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="challenge.html">Savings Challenge</a></li>
+      <li><a href="#about">About Us</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-ghost">Login</button>
+      <a href="challenge.html" class="btn-primary">Sign Up</a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg-circle c1"></div>
+    <div class="hero-bg-circle c2"></div>
+
+    <div class="hero-content">
+      <span class="badge">Save Today, Secure Tomorrow</span>
+      <h1>Your Money,<br>Your Future.</h1>
+      <p>The digital piggy bank that helps you save, track, and achieve your goals effortlessly — in Kuwaiti Dinar.</p>
+      <div class="hero-buttons">
+        <a href="challenge.html" class="btn-primary">Start Saving Now →</a>
+        <a href="#how-it-works" class="btn-outline">▷ How It Works</a>
+      </div>
+      <div class="social-proof">
+        <div class="avatars">
+          <span>F</span><span>A</span><span>S</span><span>M</span><span>K</span>
+        </div>
+        <p>Join 50,000+ happy savers 🎉</p>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="dots">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="coin c1">KD</div>
+      <div class="coin c2">KD</div>
+      <div class="coin c3">KD</div>
+      <div class="plant">🪴</div>
+
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-greeting">Hello, Fares 👋</div>
+          <div class="phone-name">Your Savings</div>
+          <div class="savings-card">
+            <label>Total Savings</label>
+            <div class="amount" id="phoneBalance">0 KD</div>
+            <div class="mini-chart">
+              <span style="height:40%"></span><span style="height:55%"></span>
+              <span style="height:35%"></span><span style="height:70%"></span>
+              <span style="height:50%"></span><span style="height:85%"></span>
+              <span style="height:60%"></span><span style="height:90%"></span>
+            </div>
+          </div>
+          <div class="goals-title">Your Goals</div>
+          <div class="goal-item">
+            <div class="goal-item-header"><span>حصالتي</span><span id="phonePct">0%</span></div>
+            <div class="goal-bar"><div class="goal-bar-fill" id="phoneBar" style="width:0%"></div></div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-item-header"><span>Emergency Fund</span><span>45%</span></div>
+            <div class="goal-bar"><div class="goal-bar-fill" style="width:45%"></div></div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-item-header"><span>Dream Vacation</span><span>20%</span></div>
+            <div class="goal-bar"><div class="goal-bar-fill" style="width:20%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mascot-3d">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="60" cy="72" rx="40" ry="36" fill="#fbcfe8"/>
+          <path d="M24 44 L34 16 L44 44 Z" fill="#f472b6"/>
+          <path d="M76 44 L86 16 L96 44 Z" fill="#f472b6"/>
+          <path d="M30 42 L36 22 L42 42 Z" fill="#fce7f3"/>
+          <path d="M78 42 L84 22 L90 42 Z" fill="#fce7f3"/>
+          <circle cx="44" cy="68" r="5.5" fill="#1e293b"/>
+          <circle cx="76" cy="68" r="5.5" fill="#1e293b"/>
+          <circle cx="46" cy="66" r="2" fill="#fff"/>
+          <circle cx="78" cy="66" r="2" fill="#fff"/>
+          <ellipse cx="60" cy="80" rx="5" ry="3.5" fill="#ec4899"/>
+          <path d="M52 88 Q60 96 68 88" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <line x1="18" y1="74" x2="32" y2="72" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="18" y1="82" x2="32" y2="80" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="88" y1="72" x2="102" y2="74" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="88" y1="80" x2="102" y2="82" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <h2>Why Choose حصالتي?</h2>
+      <p>Everything you need to build better saving habits</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Secure & Safe</h3>
+        <p>Your savings data stays on your device. Private and always under your control.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Achieve Goals</h3>
+        <p>Set a 1500 KD target and track every step with our interactive savings grid.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Smart Insights</h3>
+        <p>See your progress at a glance with live charts and percentage tracking.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3>Instant Alerts</h3>
+        <p>Celebrate milestones when you hit your savings targets and stay motivated.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stats-box">
+      <div class="stat-item">
+        <div class="stat-value">50K+</div>
+        <div class="stat-label">Happy Users</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1.5M+ KD</div>
+        <div class="stat-label">Money Saved</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">100K+</div>
+        <div class="stat-label">Goals Achieved</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">4.8 <span class="stars">★★★★★</span></div>
+        <div class="stat-label">User Rating</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="how-inner">
+      <h2>How It Works</h2>
+      <p>Start your savings journey in three simple steps</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Pick an Amount</h3>
+          <p>Each number on the board represents a KD amount. Choose one whenever you save that sum.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Tap to Mark It</h3>
+          <p>Click the number and a green checkmark appears — your digital piggy bank grows instantly.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Reach 1500 KD</h3>
+          <p>Keep going until you've saved 1500 Kuwaiti Dinar. We'll celebrate with you!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="about">
+    <h2>Ready to start saving?</h2>
+    <p>Open your savings challenge board and begin your 1500 KD journey today.</p>
+    <a href="challenge.html" class="btn-primary" style="font-size:1rem;padding:14px 32px">Open Savings Challenge →</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span>© 2026 حصالتي</span>
+    <span>Made with 💗 in Kuwait · <a href="challenge.html">حصالتي</a></span>
+  </footer>
+
+  <script>
+    (function syncPhoneMockup() {
+      const GOAL = 1500;
+      const STORAGE_KEY = "piggy-bank-kd-v1";
+      const GRID = [
+        [1,18,12,5,9,17,12,7,16,14,5],[1,20,12,6,7,17,14,7,12,9,5],[1,1,2,7,4,16,11,8,7,6,4],
+        [2,19,11,6,7,15,12,8,6,9,5],[4,20,11,7,8,14,13,9,7,11,6],[5,21,11,8,9,13,14,11,8,12,7],
+        [6,21,11,9,11,12,15,12,9,13,8],[7,22,11,11,12,11,16,13,11,14,9],[8,20,11,12,13,9,17,14,12,15,11],
+        [9,20,11,13,14,8,19,15,13,16,12],[11,20,11,14,15,7,20,16,14,17,13],[12,18,11,15,16,6,21,17,15,19,14]
+      ];
+      try {
+        const checked = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        let saved = 0;
+        GRID.forEach((row, r) => row.forEach((amt, c) => {
+          if (checked[`${r}-${c}`]) saved += amt;
+        }));
+        const pct = Math.min(100, Math.round((saved / GOAL) * 100));
+        document.getElementById("phoneBalance").textContent = saved + " KD";
+        document.getElementById("phonePct").textContent = pct + "%";
+        document.getElementById("phoneBar").style.width = pct + "%";
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>
