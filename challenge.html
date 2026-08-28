@@ -35,6 +35,41 @@
       padding: 24px 16px 40px;
     }
 
+    .top-bar {
+      align-self: flex-start;
+      max-width: 680px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .top-bar a {
+      color: var(--pink-dark);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .top-bar-actions button {
+      background: var(--pink-light);
+      border: 1px solid var(--pink-muted);
+      color: var(--pink-dark);
+      font-size: 0.78rem;
+      padding: 5px 12px;
+      border-radius: 99px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+    }
+
     .back-link {
       align-self: flex-start;
       max-width: 680px;
@@ -50,10 +85,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: color 0.15s;
     }
-
-    .back-link a:hover { color: var(--pink); }
 
     .board {
       width: 100%;
@@ -288,8 +320,13 @@
 </head>
 <body>
 
-  <div class="back-link">
-    <a href="index.html">← Back to Home</a>
+  <div class="top-bar">
+    <a href="index.html">← Home</a>
+    <div class="top-bar-actions">
+      <span id="userLabel" style="font-size:0.78rem;color:var(--text-muted)"></span>
+      <a href="admin.html" id="adminLink" style="display:none;font-size:0.78rem;color:var(--pink-dark)">Admin</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </div>
 
   <div class="board">
@@ -329,7 +366,17 @@
     </div>
   </div>
 
+  <script src="auth.js"></script>
   <script>
+    requireAuth().then(user => {
+      if (!user) return;
+      document.getElementById("userLabel").textContent = user.username;
+      if (user.role === "admin") {
+        document.getElementById("adminLink").style.display = "inline";
+      }
+    });
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
     const GOAL = 1500;
     const CURRENCY = "KD";
     const STORAGE_KEY = "piggy-bank-kd-v1";

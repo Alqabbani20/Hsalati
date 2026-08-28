@@ -663,6 +663,136 @@
       .stat-item { border-right: none !important; border-bottom: 1px solid #e2e8f0; }
       .stat-item:last-child { border-bottom: none; }
     }
+
+    /* Login modal */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      padding: 24px;
+    }
+
+    .login-overlay.show { opacity: 1; pointer-events: all; }
+
+    .login-modal {
+      background: white;
+      border-radius: 24px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--pink-light);
+      transform: scale(0.92);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .login-overlay.show .login-modal { transform: scale(1); }
+
+    .login-close {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--pink-soft);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-modal h2 {
+      font-family: "Amiri", serif;
+      font-size: 1.8rem;
+      color: var(--pink-dark);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .login-modal .sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+
+    .login-modal label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .login-modal input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--pink-light);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .login-modal input:focus { border-color: var(--pink); }
+
+    .login-error {
+      background: #fef2f2;
+      color: #ef4444;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .login-error.show { display: block; }
+
+    .btn-login-full {
+      width: 100%;
+      background: var(--pink);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 99px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35);
+    }
+
+    .btn-login-full:hover { background: var(--pink-dark); }
+
+    .nav-user {
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-user.show { display: flex; }
+
+    .nav-user span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pink-dark);
+    }
+
+    .nav-guest.hidden { display: none; }
   </style>
 </head>
 <body>
@@ -694,12 +824,18 @@
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="challenge.html">Savings Challenge</a></li>
+      <li><a href="challenge.html" id="navChallengeLink">Savings Challenge</a></li>
       <li><a href="#about">About Us</a></li>
     </ul>
-    <div class="nav-actions">
-      <button class="btn-ghost">Login</button>
-      <a href="challenge.html" class="btn-primary">Sign Up</a>
+    <div class="nav-actions nav-guest" id="navGuest">
+      <button class="btn-ghost" id="openLoginBtn">Login</button>
+      <button class="btn-primary" id="openLoginBtn2">Sign Up</button>
+    </div>
+    <div class="nav-user" id="navUser">
+      <span id="navUsername"></span>
+      <a href="challenge.html" class="btn-ghost">حصالتي</a>
+      <a href="admin.html" class="btn-ghost" id="navAdminLink" style="display:none">Admin</a>
+      <button class="btn-ghost" id="navLogoutBtn">Logout</button>
     </div>
     <button class="menu-toggle" aria-label="Menu">☰</button>
   </nav>
@@ -714,7 +850,7 @@
       <h1>Your Money,<br>Your Future.</h1>
       <p>The digital piggy bank that helps you save, track, and achieve your goals effortlessly — in Kuwaiti Dinar.</p>
       <div class="hero-buttons">
-        <a href="challenge.html" class="btn-primary">Start Saving Now →</a>
+        <button class="btn-primary" id="heroStartBtn">Start Saving Now →</button>
         <a href="#how-it-works" class="btn-outline">▷ How It Works</a>
       </div>
       <div class="social-proof">
@@ -871,8 +1007,25 @@
   <section class="cta" id="about">
     <h2>Ready to start saving?</h2>
     <p>Open your savings challenge board and begin your 1500 KD journey today.</p>
-    <a href="challenge.html" class="btn-primary" style="font-size:1rem;padding:14px 32px">Open Savings Challenge →</a>
+    <button class="btn-primary" id="ctaStartBtn" style="font-size:1rem;padding:14px 32px;border:none;cursor:pointer;font-family:inherit">Open Savings Challenge →</button>
   </section>
+
+  <!-- Login Modal -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-modal">
+      <button class="login-close" id="closeLoginBtn" aria-label="Close">×</button>
+      <h2>حصالتي</h2>
+      <p class="sub">تسجيل الدخول إلى حسابك</p>
+      <div class="login-error" id="loginError"></div>
+      <form id="loginForm">
+        <label for="loginUsername">اسم المستخدم</label>
+        <input type="text" id="loginUsername" autocomplete="username" required />
+        <label for="loginPassword">كلمة المرور</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required />
+        <button type="submit" class="btn-login-full" id="loginSubmitBtn">دخول</button>
+      </form>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer>
@@ -880,7 +1033,92 @@
     <span>Made with 💗 in Kuwait · <a href="challenge.html">حصالتي</a></span>
   </footer>
 
+  <script src="auth.js"></script>
   <script>
+    let currentUser = null;
+
+    const overlay = document.getElementById("loginOverlay");
+    const loginError = document.getElementById("loginError");
+
+    function openLogin() {
+      overlay.classList.add("show");
+      loginError.classList.remove("show");
+    }
+
+    function closeLogin() {
+      overlay.classList.remove("show");
+    }
+
+    function updateNav(user) {
+      currentUser = user;
+      if (user) {
+        document.getElementById("navGuest").classList.add("hidden");
+        document.getElementById("navUser").classList.add("show");
+        document.getElementById("navUsername").textContent = user.username;
+        document.getElementById("navAdminLink").style.display =
+          user.role === "admin" ? "inline-flex" : "none";
+        document.getElementById("navChallengeLink").href = "challenge.html";
+      } else {
+        document.getElementById("navGuest").classList.remove("hidden");
+        document.getElementById("navUser").classList.remove("show");
+        document.getElementById("navChallengeLink").href = "#";
+        document.getElementById("navChallengeLink").onclick = (e) => {
+          e.preventDefault();
+          openLogin();
+        };
+      }
+    }
+
+    function goToApp() {
+      if (!currentUser) { openLogin(); return; }
+      window.location.href = currentUser.role === "admin" ? "admin.html" : "challenge.html";
+    }
+
+    document.getElementById("openLoginBtn").addEventListener("click", openLogin);
+    document.getElementById("openLoginBtn2").addEventListener("click", openLogin);
+    document.getElementById("closeLoginBtn").addEventListener("click", closeLogin);
+    document.getElementById("heroStartBtn").addEventListener("click", goToApp);
+    document.getElementById("ctaStartBtn").addEventListener("click", goToApp);
+    document.getElementById("navLogoutBtn").addEventListener("click", logout);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeLogin();
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("loginSubmitBtn");
+      btn.disabled = true;
+      loginError.classList.remove("show");
+
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          loginError.textContent = data.error || "Login failed";
+          loginError.classList.add("show");
+          btn.disabled = false;
+          return;
+        }
+        closeLogin();
+        updateNav(data.user);
+        window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
+      } catch {
+        loginError.textContent = "Could not connect. Make sure the server is running (npm start).";
+        loginError.classList.add("show");
+        btn.disabled = false;
+      }
+    });
+
+    getCurrentUser().then(updateNav);
+
     (function syncPhoneMockup() {
       const GOAL = 1500;
       const STORAGE_KEY = "piggy-bank-kd-v1";
