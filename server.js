@@ -13,6 +13,7 @@ const {
 const {
   COOKIE_NAME,
   COOKIE_OPTIONS,
+  COOKIE_CLEAR_OPTIONS,
   signToken,
   verifyToken,
   authMiddleware,
@@ -51,7 +52,7 @@ app.post("/api/login", (req, res) => {
 });
 
 app.post("/api/logout", (_req, res) => {
-  res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: "lax" });
+  res.clearCookie(COOKIE_NAME, COOKIE_CLEAR_OPTIONS);
   res.json({ ok: true });
 });
 
@@ -123,9 +124,16 @@ app.get("/admin.html", (req, res, next) => {
   next();
 });
 
-// ── Static files ──
+// ── Static files (block sensitive paths first) ──
 
-app.use(express.static(root));
+const BLOCKED_PATHS = /^\/(data|lib|node_modules|api)(\/|$)|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
+
+app.use((req, res, next) => {
+  if (BLOCKED_PATHS.test(req.path)) return res.sendStatus(404);
+  next();
+});
+
+app.use(express.static(root, { dotfiles: "deny" }));
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
