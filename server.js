@@ -26,6 +26,10 @@ const root = __dirname;
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, admin: !!process.env.ADMIN_PASSWORD });
+});
+
 // ── Auth API ──
 
 app.post("/api/login", (req, res) => {
