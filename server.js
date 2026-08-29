@@ -123,8 +123,10 @@ app.get("/admin.html", (req, res, next) => {
 
 app.use(express.static(root));
 
-app.listen(PORT, () => {
-  console.log(`حصالتي running at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`حصالتي running at http://localhost:${PORT}`);
+  });
+}
 
 module.exports = app;
