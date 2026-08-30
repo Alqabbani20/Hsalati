@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "restart": "node scripts/restart.js"
+    "restart": "node scripts/restart.js",
+    "migrate:supabase": "node scripts/migrate-to-supabase.js"
   },
   "engines": {
     "node": "20.x"

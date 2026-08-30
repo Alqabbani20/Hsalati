@@ -65,6 +65,9 @@ const I18N = {
     deleteUserConfirm: "حذف المستخدم",
     storageWarningTitle: "⚠️ التخزين غير دائم",
     storageWarningBody: "المستخدمون والخطط تُحذف عند إعادة تشغيل الخادم. أضف Supabase في Vercel Environment Variables ثم أعد النشر.",
+    storageOkTitle: "✅ Supabase متصل",
+    storageOkBody: "قاعدة البيانات تعمل — المستخدمون والخطط تُحفظ بشكل دائم.",
+    storageUsers: "مستخدم",
 
     // Landing
     navFeatures: "المميزات",
@@ -81,7 +84,7 @@ const I18N = {
     whyTitle: "لماذا حصالتي؟",
     whySub: "كل ما تحتاجه لبناء عادات توفير أفضل",
     featSecure: "آمن ومحمي",
-    featSecureDesc: "بياناتك تبقى تحت سيطرتك. خاصة وآمنة دائماً.",
+    featSecureDesc: "بياناتك محفوظة بأمان في Supabase. خاصة وآمنة دائماً.",
     featGoals: "حقّق أهدافك",
     featGoalsDesc: "أنشئ خطط توفير غير محدودة وتتبع كل خطوة.",
     featInsights: "رؤى ذكية",
@@ -176,6 +179,9 @@ const I18N = {
     deleteUserConfirm: "Delete user",
     storageWarningTitle: "⚠️ Storage is not persistent",
     storageWarningBody: "Users and plans are lost when the server restarts. Add Supabase env vars in Vercel, then redeploy.",
+    storageOkTitle: "✅ Supabase connected",
+    storageOkBody: "Database is live — users and plans are saved permanently.",
+    storageUsers: "users",
 
     navFeatures: "Features",
     navHow: "How It Works",
@@ -191,7 +197,7 @@ const I18N = {
     whyTitle: "Why Choose Hsalati?",
     whySub: "Everything you need to build better saving habits",
     featSecure: "Secure & Safe",
-    featSecureDesc: "Your savings data stays under your control. Private and always secure.",
+    featSecureDesc: "Your data is stored securely in Supabase. Private and always under your control.",
     featGoals: "Achieve Goals",
     featGoalsDesc: "Create unlimited savings plans and track every step.",
     featInsights: "Smart Insights",

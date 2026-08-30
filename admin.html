@@ -232,7 +232,11 @@
       line-height: 1.5;
     }
 
-    .storage-banner strong { display: block; margin-bottom: 4px; }
+    .storage-banner.ok {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
   </style>
 </head>
 <body>
@@ -303,9 +307,15 @@
         const res = await fetch("/api/health");
         const data = await res.json();
         const banner = document.getElementById("storageBanner");
-        if (!data.persistent) {
+        if (!data.persistent || !data.ok) {
+          banner.className = "storage-banner";
           banner.style.display = "block";
-          banner.innerHTML = `<strong>${t("storageWarningTitle")}</strong>${t("storageWarningBody")}`;
+          const hint = data.hint || data.dbError || "";
+          banner.innerHTML = `<strong>${t("storageWarningTitle")}</strong>${t("storageWarningBody")}${hint ? `<br><small>${hint}</small>` : ""}`;
+        } else if (data.storage === "supabase") {
+          banner.className = "storage-banner ok";
+          banner.style.display = "block";
+          banner.innerHTML = `<strong>${t("storageOkTitle")}</strong>${t("storageOkBody")} (${data.db?.users ?? 0} ${t("storageUsers")})`;
         } else {
           banner.style.display = "none";
         }

@@ -17,7 +17,7 @@ const {
   storageMode,
   isPersistentStorage,
 } = require("./lib/db");
-const { generatePlan } = require("./lib/generatePlan");
+const { useSupabase } = require("./lib/supabase");
 const {
   COOKIE_NAME,
   COOKIE_OPTIONS,
@@ -35,17 +35,31 @@ const root = __dirname;
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", async (_req, res) => {
   const storage = storageMode();
-  res.json({
+  const result = {
     ok: true,
     admin: !!process.env.ADMIN_PASSWORD,
     storage,
     persistent: isPersistentStorage(),
     warning: storage === "ephemeral"
-      ? "Connect Vercel Blob (Storage tab) or Upstash Redis for persistent users and plans"
+      ? "Add Supabase env vars for persistent storage"
       : undefined,
-  });
+  };
+
+  if (storage === "supabase") {
+    try {
+      const { testConnection } = require("./lib/db-supabase");
+      const db = await testConnection();
+      result.db = db;
+    } catch (err) {
+      result.ok = false;
+      result.dbError = err.message;
+      result.hint = err.hint || "Run supabase/schema.sql in Supabase SQL Editor";
+    }
+  }
+
+  res.status(result.ok ? 200 : 503).json(result);
 });
 
 app.post("/api/login", async (req, res) => {
@@ -64,8 +78,11 @@ app.post("/api/login", async (req, res) => {
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
     res.json({ user: { id: user.id, username: user.username, role: user.role } });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Login failed" });
+    console.error("Login error:", err);
+    res.status(500).json({
+      error: "Login failed",
+      hint: err.hint || (useSupabase() ? "Check Supabase tables — run supabase/schema.sql" : undefined),
+    });
   }
 });
 
