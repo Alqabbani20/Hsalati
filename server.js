@@ -50,11 +50,12 @@ app.get("/api/health", async (_req, res) => {
     storage,
     persistent: isPersistentStorage(),
     supabaseConfigured: useSupabase(),
+    needsSchema: false,
     supabaseHost: process.env.SUPABASE_URL
       ? new URL(process.env.SUPABASE_URL).hostname
       : undefined,
     warning: storage === "ephemeral"
-      ? "Add Supabase env vars for persistent storage"
+      ? "Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy"
       : undefined,
   };
 
@@ -65,8 +66,10 @@ app.get("/api/health", async (_req, res) => {
       result.db = db;
     } catch (err) {
       result.ok = false;
+      result.needsSchema = true;
       result.dbError = err.message;
       result.hint = err.hint || "Run supabase/schema.sql in Supabase SQL Editor";
+      result.warning = "Supabase is connected but tables are missing — run the SQL below";
     }
   }
 
@@ -138,7 +141,10 @@ app.get("/api/users", authMiddleware, adminMiddleware, adminLimiter, async (_req
     res.json({ users: await getAllUsers() });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to load users" });
+    res.status(500).json({
+      error: err.message || "Failed to load users",
+      hint: err.hint,
+    });
   }
 });
 
@@ -169,7 +175,12 @@ app.post("/api/users", authMiddleware, adminMiddleware, adminLimiter, async (req
     res.status(201).json({ user });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create user" });
+    res.status(500).json({
+      error: err.message || "Failed to create user",
+      hint: err.hint || (useSupabase()
+        ? "Run supabase/schema.sql in Supabase SQL Editor, then click Check connection"
+        : undefined),
+    });
   }
 });
 

@@ -64,10 +64,14 @@ const I18N = {
     userCreated: "تم إنشاء المستخدم بنجاح!",
     deleteUserConfirm: "حذف المستخدم",
     storageWarningTitle: "⚠️ التخزين غير دائم",
-    storageWarningBody: "المستخدمون والخطط تُحذف عند إعادة تشغيل الخادم. أضف Supabase في Vercel Environment Variables ثم أعد النشر.",
+    storageWarningBody: "المستخدمون والخطط تُحذف عند إعادة تشغيل الخادم. أضف SUPABASE_URL و SUPABASE_SERVICE_ROLE_KEY في Vercel ثم أعد النشر.",
+    storageSchemaTitle: "⚠️ قاعدة البيانات تحتاج إعداد",
+    storageSchemaBody: "Supabase متصل لكن الجداول غير موجودة. نفّذ SQL أدناه ثم اضغط «تحقق من الاتصال» — بعدها يُحفظ المستخدمون بشكل دائم.",
     storageOkTitle: "✅ Supabase متصل",
     storageOkBody: "قاعدة البيانات تعمل — المستخدمون والخطط تُحفظ بشكل دائم.",
     storageUsers: "مستخدم",
+    dbNotReady: "أصلح قاعدة البيانات أولاً قبل إنشاء مستخدمين",
+    copied: "تم النسخ!",
 
     // Landing
     navFeatures: "المميزات",
@@ -233,10 +237,14 @@ const I18N = {
     userCreated: "User created successfully!",
     deleteUserConfirm: "Delete user",
     storageWarningTitle: "⚠️ Storage is not persistent",
-    storageWarningBody: "Users and plans are lost when the server restarts. Add Supabase env vars in Vercel, then redeploy.",
+    storageWarningBody: "Users and plans are lost when the server restarts. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy.",
+    storageSchemaTitle: "⚠️ Database setup required",
+    storageSchemaBody: "Supabase is connected but tables are missing. Run the SQL below, then click Check connection — users will save permanently after that.",
     storageOkTitle: "✅ Supabase connected",
     storageOkBody: "Database is live — users and plans are saved permanently.",
     storageUsers: "users",
+    dbNotReady: "Fix the database before creating users",
+    copied: "Copied!",
 
     navFeatures: "Features",
     navHow: "How It Works",
@@ -348,8 +356,10 @@ function getLang() {
   return currentLang;
 }
 
-function t(key) {
-  return I18N[currentLang]?.[key] ?? I18N.en[key] ?? key;
+function t(key, fallback) {
+  const value = I18N[currentLang]?.[key] ?? I18N.en[key];
+  if (value != null && value !== "") return value;
+  return fallback != null ? fallback : key;
 }
 
 function setLang(lang) {
