@@ -237,6 +237,15 @@
       border-color: #bbf7d0;
       color: #166534;
     }
+
+    #schemaSql, #importCsv {
+      direction: ltr;
+      text-align: left;
+      unicode-bidi: isolate;
+      white-space: pre;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
   </style>
 </head>
 <body>
@@ -261,7 +270,7 @@
       <h2 data-i18n="dbSetupTitle">🗄️ إعداد قاعدة البيانات</h2>
       <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;line-height:1.5" data-i18n="dbSetupSteps">1. افتح Supabase → SQL Editor → New query<br>2. انسخ الكود أدناه → Run<br>3. ارجع هنا واضغط "تحقق من الاتصال"</p>
       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener" class="btn-create" style="display:inline-block;text-decoration:none;margin-bottom:12px" data-i18n="openSupabase">فتح Supabase Dashboard</a>
-      <textarea id="schemaSql" rows="12" readonly style="width:100%;padding:10px;border:2px solid var(--pink-light);border-radius:10px;font-family:monospace;font-size:0.72rem;margin-bottom:10px"></textarea>
+      <textarea id="schemaSql" rows="12" readonly dir="ltr" spellcheck="false" style="width:100%;padding:10px;border:2px solid var(--pink-light);border-radius:10px;font-family:ui-monospace,Consolas,monospace;font-size:0.72rem;margin-bottom:10px;line-height:1.45"></textarea>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button type="button" class="btn-create" id="copySchemaBtn" data-i18n="copySchema">نسخ SQL</button>
         <button type="button" class="btn-outline" id="recheckDbBtn" data-i18n="recheckDb">تحقق من الاتصال</button>
@@ -346,6 +355,7 @@
         const schemaCard = document.getElementById("schemaSetup");
         if (!data.ok && data.storage === "supabase") {
           schemaCard.style.display = "block";
+          if (typeof applyI18n === "function") applyI18n();
           loadSchemaSql();
         } else {
           schemaCard.style.display = "none";

@@ -1,4 +1,4 @@
--- حصالتي schema — run in Supabase SQL Editor (safe to re-run)
+-- Hsalati schema — run in Supabase SQL Editor (safe to re-run)
 
 create table if not exists public.users (
   id            bigserial primary key,

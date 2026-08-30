@@ -167,7 +167,7 @@ const I18N = {
     forgotPassword: "نسيت كلمة المرور؟",
     resetRequested: "تم إرسال الطلب — تواصل مع المدير",
     dbSetupTitle: "🗄️ إعداد قاعدة البيانات",
-    dbSetupSteps: "1. افتح Supabase → SQL Editor → New query\n2. انسخ الكود أدناه → Run\n3. ارجع هنا واضغط تحقق من الاتصال",
+    dbSetupSteps: "1. افتح Supabase → SQL Editor → New query\n2. انسخ الكود أدناه → Run\n3. ارجع هنا واضغط «تحقق من الاتصال»",
     openSupabase: "فتح Supabase Dashboard",
     copySchema: "نسخ SQL",
     recheckDb: "تحقق من الاتصال",
