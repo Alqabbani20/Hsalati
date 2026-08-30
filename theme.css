@@ -28,6 +28,23 @@
   --overlay: rgba(0, 0, 0, 0.65);
 }
 
+.lang-toggle {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-strong, #fbcfe8);
+  color: var(--text, #1e293b);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.lang-toggle:hover {
+  background: var(--surface-alt, #fdf2f8);
+}
+
 [data-theme="dark"] body {
   background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 45%, var(--bg-gradient-end) 100%) !important;
   color: var(--text) !important;

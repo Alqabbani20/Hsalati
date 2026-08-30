@@ -236,7 +236,8 @@ app.get("/admin.html", (req, res, next) => {
   next();
 });
 
-const BLOCKED_PATHS = /^\/(data|lib|node_modules|api)(\/|$)|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
+// Block sensitive dirs/files from static serving — do NOT block /api/* routes (handled above)
+const BLOCKED_PATHS = /^\/(data|lib|node_modules)(\/|$)|^\/api\/index\.js$|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
 
 app.use((req, res, next) => {
   if (BLOCKED_PATHS.test(req.path)) return res.sendStatus(404);

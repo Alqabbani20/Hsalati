@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="theme.css" />
+  <script src="i18n.js"></script>
   <script src="theme.js"></script>
   <style>
     :root {
@@ -154,7 +155,10 @@
 <body>
 
   <div class="card">
-    <button class="theme-toggle" style="position:absolute;top:14px;left:14px" title="Dark mode">🌙</button>
+    <div style="position:absolute;top:14px;left:14px;display:flex;gap:8px">
+      <button type="button" class="lang-toggle">EN</button>
+      <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
+    </div>
     <div class="logo-wrap">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <ellipse cx="32" cy="38" rx="22" ry="20" fill="#fbcfe8"/>
@@ -164,26 +168,26 @@
         <circle cx="40" cy="36" r="3" fill="#1e293b"/>
         <ellipse cx="32" cy="42" rx="3" ry="2" fill="#ec4899"/>
       </svg>
-      <h1>حصالتي</h1>
-      <p>تسجيل الدخول إلى حسابك</p>
+      <h1 data-i18n="appName">حصالتي</h1>
+      <p data-i18n="loginTitle">تسجيل الدخول إلى حسابك</p>
     </div>
 
     <div class="error" id="error"></div>
 
     <form id="loginForm">
       <div class="form-group">
-        <label for="username">اسم المستخدم</label>
+        <label for="username" data-i18n="username">اسم المستخدم</label>
         <input type="text" id="username" name="username" autocomplete="username" required />
       </div>
       <div class="form-group">
-        <label for="password">كلمة المرور</label>
+        <label for="password" data-i18n="password">كلمة المرور</label>
         <input type="password" id="password" name="password" autocomplete="current-password" required />
       </div>
-      <button type="submit" class="btn-login" id="submitBtn">دخول</button>
+      <button type="submit" class="btn-login" id="submitBtn" data-i18n="loginBtn">دخول</button>
     </form>
 
     <div class="back">
-      <a href="index.html">← العودة للصفحة الرئيسية</a>
+      <a href="index.html" data-i18n="backHome">← العودة للصفحة الرئيسية</a>
     </div>
   </div>
 
@@ -193,7 +197,7 @@
     const errorEl = document.getElementById("error");
 
     if (params.get("error") === "admin") {
-      errorEl.textContent = "Admin access required.";
+      errorEl.textContent = t("adminRequired");
       errorEl.classList.add("show");
     }
 
@@ -214,23 +218,16 @@
       const password = document.getElementById("password").value;
 
       try {
-        const res = await fetch("/api/login", {
+        const data = await apiFetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          errorEl.textContent = data.error || "Login failed";
-          errorEl.classList.add("show");
-          btn.disabled = false;
-          return;
-        }
-
         window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
-      } catch {
-        errorEl.textContent = "Could not connect to server. Run: npm start";
+      } catch (err) {
+        errorEl.textContent = err.message.includes("connect") || err.message.includes("fetch")
+          ? t("connectError") : err.message || t("loginFailed");
         errorEl.classList.add("show");
         btn.disabled = false;
       }

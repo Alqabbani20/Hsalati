@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="theme.css" />
+  <script src="i18n.js"></script>
   <script src="theme.js"></script>
   <style>
     :root {
@@ -824,22 +825,24 @@
       حصالتي
     </a>
     <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="challenge.html" id="navChallengeLink">Savings Challenge</a></li>
-      <li><a href="#about">About Us</a></li>
+      <li><a href="#features" data-i18n="navFeatures">Features</a></li>
+      <li><a href="#how-it-works" data-i18n="navHow">How It Works</a></li>
+      <li><a href="challenge.html" id="navChallengeLink" data-i18n="navChallenge">Savings Challenge</a></li>
+      <li><a href="#about" data-i18n="navAbout">About Us</a></li>
     </ul>
     <div class="nav-actions nav-guest" id="navGuest">
-      <button class="theme-toggle" title="Dark mode">🌙</button>
-      <button class="btn-ghost" id="openLoginBtn">Login</button>
-      <button class="btn-primary" id="openLoginBtn2">Sign Up</button>
+      <button type="button" class="lang-toggle">EN</button>
+      <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
+      <button class="btn-ghost" id="openLoginBtn" data-i18n="login">Login</button>
+      <button class="btn-primary" id="openLoginBtn2" data-i18n="signUp">Sign Up</button>
     </div>
     <div class="nav-user" id="navUser">
-      <button class="theme-toggle" title="Dark mode">🌙</button>
+      <button type="button" class="lang-toggle">EN</button>
+      <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
       <span id="navUsername"></span>
-      <a href="challenge.html" class="btn-ghost">حصالتي</a>
-      <a href="admin.html" class="btn-ghost" id="navAdminLink" style="display:none">Admin</a>
-      <button class="btn-ghost" id="navLogoutBtn">Logout</button>
+      <a href="challenge.html" class="btn-ghost" data-i18n="appName">حصالتي</a>
+      <a href="admin.html" class="btn-ghost" id="navAdminLink" style="display:none" data-i18n="admin">Admin</a>
+      <button class="btn-ghost" id="navLogoutBtn" data-i18n="logout">Logout</button>
     </div>
     <button class="menu-toggle" aria-label="Menu">☰</button>
   </nav>
@@ -850,18 +853,18 @@
     <div class="hero-bg-circle c2"></div>
 
     <div class="hero-content">
-      <span class="badge">Save Today, Secure Tomorrow</span>
-      <h1>Your Money,<br>Your Future.</h1>
-      <p>The digital piggy bank that helps you save, track, and achieve your goals effortlessly — in Kuwaiti Dinar.</p>
+      <span class="badge" data-i18n="badge">Save Today, Secure Tomorrow</span>
+      <h1 data-i18n="heroTitle">Your Money,<br>Your Future.</h1>
+      <p data-i18n="heroSub">The digital piggy bank that helps you save, track, and achieve your goals effortlessly — in Kuwaiti Dinar.</p>
       <div class="hero-buttons">
-        <button class="btn-primary" id="heroStartBtn">Start Saving Now →</button>
-        <a href="#how-it-works" class="btn-outline">▷ How It Works</a>
+        <button class="btn-primary" id="heroStartBtn" data-i18n="startSaving">Start Saving Now →</button>
+        <a href="#how-it-works" class="btn-outline" data-i18n="howItWorksBtn">▷ How It Works</a>
       </div>
       <div class="social-proof">
         <div class="avatars">
           <span>F</span><span>A</span><span>S</span><span>M</span><span>K</span>
         </div>
-        <p>Join 50,000+ happy savers 🎉</p>
+        <p data-i18n="socialProof">Join 50,000+ happy savers 🎉</p>
       </div>
     </div>
 
@@ -880,10 +883,10 @@
       <div class="phone">
         <div class="phone-notch"></div>
         <div class="phone-screen">
-          <div class="phone-greeting">Hello, Fares 👋</div>
-          <div class="phone-name">Your Savings</div>
+          <div class="phone-greeting" data-i18n="phoneHello">Hello, Fares 👋</div>
+          <div class="phone-name" data-i18n="phoneSavings">Your Savings</div>
           <div class="savings-card">
-            <label>Total Savings</label>
+            <label data-i18n="phoneTotal">Total Savings</label>
             <div class="amount" id="phoneBalance">0 KD</div>
             <div class="mini-chart">
               <span style="height:40%"></span><span style="height:55%"></span>
@@ -892,7 +895,7 @@
               <span style="height:60%"></span><span style="height:90%"></span>
             </div>
           </div>
-          <div class="goals-title">Your Goals</div>
+          <div class="goals-title" data-i18n="phoneGoals">Your Goals</div>
           <div class="goal-item">
             <div class="goal-item-header"><span>حصالتي</span><span id="phonePct">0%</span></div>
             <div class="goal-bar"><div class="goal-bar-fill" id="phoneBar" style="width:0%"></div></div>
@@ -933,29 +936,29 @@
   <!-- Features -->
   <section class="features" id="features">
     <div class="features-header">
-      <h2>Why Choose حصالتي?</h2>
-      <p>Everything you need to build better saving habits</p>
+      <h2 data-i18n="whyTitle">Why Choose حصالتي?</h2>
+      <p data-i18n="whySub">Everything you need to build better saving habits</p>
     </div>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">🛡️</div>
-        <h3>Secure & Safe</h3>
-        <p>Your savings data stays on your device. Private and always under your control.</p>
+        <h3 data-i18n="featSecure">Secure & Safe</h3>
+        <p data-i18n="featSecureDesc">Your savings data stays on your device. Private and always under your control.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎯</div>
-        <h3>Achieve Goals</h3>
-        <p>Set a 1500 KD target and track every step with our interactive savings grid.</p>
+        <h3 data-i18n="featGoals">Achieve Goals</h3>
+        <p data-i18n="featGoalsDesc">Set a 1500 KD target and track every step with our interactive savings grid.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📊</div>
-        <h3>Smart Insights</h3>
-        <p>See your progress at a glance with live charts and percentage tracking.</p>
+        <h3 data-i18n="featInsights">Smart Insights</h3>
+        <p data-i18n="featInsightsDesc">See your progress at a glance with live charts and percentage tracking.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔔</div>
-        <h3>Instant Alerts</h3>
-        <p>Celebrate milestones when you hit your savings targets and stay motivated.</p>
+        <h3 data-i18n="featAlerts">Instant Alerts</h3>
+        <p data-i18n="featAlertsDesc">Celebrate milestones when you hit your savings targets and stay motivated.</p>
       </div>
     </div>
   </section>
@@ -965,19 +968,19 @@
     <div class="stats-box">
       <div class="stat-item">
         <div class="stat-value">50K+</div>
-        <div class="stat-label">Happy Users</div>
+        <div class="stat-label" data-i18n="statUsers">Happy Users</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">1.5M+ KD</div>
-        <div class="stat-label">Money Saved</div>
+        <div class="stat-label" data-i18n="statSaved">Money Saved</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">100K+</div>
-        <div class="stat-label">Goals Achieved</div>
+        <div class="stat-label" data-i18n="statGoals">Goals Achieved</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">4.8 <span class="stars">★★★★★</span></div>
-        <div class="stat-label">User Rating</div>
+        <div class="stat-label" data-i18n="statRating">User Rating</div>
       </div>
     </div>
   </section>
@@ -985,23 +988,23 @@
   <!-- How It Works -->
   <section class="how-it-works" id="how-it-works">
     <div class="how-inner">
-      <h2>How It Works</h2>
-      <p>Start your savings journey in three simple steps</p>
+      <h2 data-i18n="howTitle">How It Works</h2>
+      <p data-i18n="howSub">Start your savings journey in three simple steps</p>
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>Pick an Amount</h3>
-          <p>Each number on the board represents a KD amount. Choose one whenever you save that sum.</p>
+          <h3 data-i18n="step1Title">Pick an Amount</h3>
+          <p data-i18n="step1Desc">Each number on the board represents a KD amount. Choose one whenever you save that sum.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>Tap to Mark It</h3>
-          <p>Click the number and a green checkmark appears — your digital piggy bank grows instantly.</p>
+          <h3 data-i18n="step2Title">Tap to Mark It</h3>
+          <p data-i18n="step2Desc">Click the number and a green checkmark appears — your digital piggy bank grows instantly.</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>Reach 1500 KD</h3>
-          <p>Keep going until you've saved 1500 Kuwaiti Dinar. We'll celebrate with you!</p>
+          <h3 data-i18n="step3Title">Reach 1500 KD</h3>
+          <p data-i18n="step3Desc">Keep going until you've saved 1500 Kuwaiti Dinar. We'll celebrate with you!</p>
         </div>
       </div>
     </div>
@@ -1009,32 +1012,32 @@
 
   <!-- CTA -->
   <section class="cta" id="about">
-    <h2>Ready to start saving?</h2>
-    <p>Open your savings challenge board and begin your 1500 KD journey today.</p>
-    <button class="btn-primary" id="ctaStartBtn" style="font-size:1rem;padding:14px 32px;border:none;cursor:pointer;font-family:inherit">Open Savings Challenge →</button>
+    <h2 data-i18n="ctaTitle">Ready to start saving?</h2>
+    <p data-i18n="ctaSub">Open your savings challenge board and begin your 1500 KD journey today.</p>
+    <button class="btn-primary" id="ctaStartBtn" style="font-size:1rem;padding:14px 32px;border:none;cursor:pointer;font-family:inherit" data-i18n="ctaBtn">Open Savings Challenge →</button>
   </section>
 
   <!-- Login Modal -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-modal">
       <button class="login-close" id="closeLoginBtn" aria-label="Close">×</button>
-      <h2>حصالتي</h2>
-      <p class="sub">تسجيل الدخول إلى حسابك</p>
+      <h2 data-i18n="appName">حصالتي</h2>
+      <p class="sub" data-i18n="loginModalSub">تسجيل الدخول إلى حسابك</p>
       <div class="login-error" id="loginError"></div>
       <form id="loginForm">
-        <label for="loginUsername">اسم المستخدم</label>
+        <label for="loginUsername" data-i18n="username">اسم المستخدم</label>
         <input type="text" id="loginUsername" autocomplete="username" required />
-        <label for="loginPassword">كلمة المرور</label>
+        <label for="loginPassword" data-i18n="password">كلمة المرور</label>
         <input type="password" id="loginPassword" autocomplete="current-password" required />
-        <button type="submit" class="btn-login-full" id="loginSubmitBtn">دخول</button>
+        <button type="submit" class="btn-login-full" id="loginSubmitBtn" data-i18n="loginBtn">دخول</button>
       </form>
     </div>
   </div>
 
   <!-- Footer -->
   <footer>
-    <span>© 2026 حصالتي</span>
-    <span>Made with 💗 in Kuwait · <a href="challenge.html">حصالتي</a></span>
+    <span data-i18n="footerCopy">© 2026 حصالتي</span>
+    <span><span data-i18n="footerMade">Made with 💗 in Kuwait</span> · <a href="challenge.html" data-i18n="appName">حصالتي</a></span>
   </footer>
 
   <script src="auth.js"></script>
@@ -1099,23 +1102,16 @@
       const password = document.getElementById("loginPassword").value;
 
       try {
-        const res = await fetch("/api/login", {
+        const data = await apiFetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
         });
-        const data = await res.json();
-        if (!res.ok) {
-          loginError.textContent = data.error || "Login failed";
-          loginError.classList.add("show");
-          btn.disabled = false;
-          return;
-        }
         closeLogin();
         updateNav(data.user);
         window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
-      } catch {
-        loginError.textContent = "Could not connect. Make sure the server is running (npm start).";
+      } catch (err) {
+        loginError.textContent = err.message || t("loginFailed");
         loginError.classList.add("show");
         btn.disabled = false;
       }

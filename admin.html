@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="theme.css" />
+  <script src="i18n.js"></script>
   <script src="theme.js"></script>
   <style>
     :root {
@@ -226,46 +227,47 @@
   <div class="container">
     <div class="top-bar">
       <div>
-        <h1>لوحة الإدارة</h1>
-        <div class="welcome">مرحباً، <span id="adminName">Admin</span></div>
+        <h1 data-i18n="adminPanel">لوحة الإدارة</h1>
+        <div class="welcome"><span data-i18n="welcome">مرحباً،</span> <span id="adminName">Admin</span></div>
       </div>
       <div class="top-actions">
-        <button class="theme-toggle" title="Dark mode">🌙</button>
-        <a href="challenge.html" class="btn-outline">حصالتي</a>
-        <a href="index.html" class="btn-outline">الرئيسية</a>
-        <button class="btn-logout" id="logoutBtn">خروج</button>
+        <button type="button" class="lang-toggle">EN</button>
+        <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
+        <a href="challenge.html" class="btn-outline" data-i18n="appName">حصالتي</a>
+        <a href="index.html" class="btn-outline" data-i18n="home">الرئيسية</a>
+        <button class="btn-logout" id="logoutBtn" data-i18n="logout">خروج</button>
       </div>
     </div>
 
     <div class="card">
-      <h2>➕ إنشاء مستخدم جديد</h2>
+      <h2 data-i18n="createUser">➕ إنشاء مستخدم جديد</h2>
       <form id="createForm">
         <div class="form-row">
           <div class="form-group">
-            <label for="newUsername">اسم المستخدم</label>
+            <label for="newUsername" data-i18n="username">اسم المستخدم</label>
             <input type="text" id="newUsername" required minlength="3" />
           </div>
           <div class="form-group">
-            <label for="newPassword">كلمة المرور</label>
+            <label for="newPassword" data-i18n="password">كلمة المرور</label>
             <input type="password" id="newPassword" required minlength="6" />
           </div>
         </div>
         <div class="form-group" style="max-width:200px;margin-bottom:16px">
-          <label for="newRole">الصلاحية</label>
+          <label for="newRole" data-i18n="role">الصلاحية</label>
           <select id="newRole">
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
         </div>
-        <button type="submit" class="btn-create">إنشاء المستخدم</button>
+        <button type="submit" class="btn-create" data-i18n="createUserBtn">إنشاء المستخدم</button>
         <div class="msg" id="formMsg"></div>
       </form>
     </div>
 
     <div class="card">
-      <h2>👥 المستخدمون</h2>
+      <h2 data-i18n="users">👥 المستخدمون</h2>
       <div id="usersTable">
-        <div class="empty">Loading...</div>
+        <div class="empty" data-i18n="loading">Loading...</div>
       </div>
     </div>
   </div>
@@ -284,12 +286,10 @@
     async function loadUsers() {
       const container = document.getElementById("usersTable");
       try {
-        const res = await fetch("/api/users");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        const data = await apiFetch("/api/users");
 
         if (data.users.length === 0) {
-          container.innerHTML = '<div class="empty">No users yet.</div>';
+          container.innerHTML = `<div class="empty">${t("noUsers")}</div>`;
           return;
         }
 
@@ -297,9 +297,9 @@
           <table>
             <thead>
               <tr>
-                <th>اسم المستخدم</th>
-                <th>الصلاحية</th>
-                <th>تاريخ الإنشاء</th>
+                <th>${t("colUsername")}</th>
+                <th>${t("colRole")}</th>
+                <th>${t("colCreated")}</th>
                 <th></th>
               </tr>
             </thead>
@@ -308,11 +308,11 @@
                 <tr>
                   <td><strong>${escapeHtml(u.username)}</strong></td>
                   <td><span class="badge ${u.role}">${u.role}</span></td>
-                  <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                  <td>${new Date(u.created_at).toLocaleDateString(getLang() === "ar" ? "ar-KW" : "en")}</td>
                   <td>
                     ${u.id !== currentUser.id
-                      ? `<button class="btn-delete" data-id="${u.id}" data-username="${escapeHtml(u.username)}">حذف</button>`
-                      : '<span style="font-size:0.75rem;color:var(--text-muted)">أنت</span>'}
+                      ? `<button class="btn-delete" data-id="${u.id}" data-username="${escapeHtml(u.username)}">${t("delete")}</button>`
+                      : `<span style="font-size:0.75rem;color:var(--text-muted)">${t("you")}</span>`}
                   </td>
                 </tr>
               `).join("")}
@@ -351,36 +351,34 @@
       const password = document.getElementById("newPassword").value;
       const role = document.getElementById("newRole").value;
 
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        showMsg(data.error || "Failed to create user", "error");
+      try {
+        await apiFetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, role }),
+        });
+        showMsg(t("userCreated"), "success");
+      } catch (err) {
+        showMsg(err.message, "error");
         return;
       }
-
-      showMsg(`User "${username}" created successfully!`, "success");
       document.getElementById("createForm").reset();
       loadUsers();
     });
 
     async function deleteUser(id, username) {
-      if (!confirm(`Delete user "${username}"?`)) return;
+      if (!confirm(`${t("deleteUserConfirm")} "${username}"?`)) return;
 
-      const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "Failed to delete");
-        return;
+      try {
+        await apiFetch(`/api/users/${id}`, { method: "DELETE" });
+        loadUsers();
+      } catch (err) {
+        alert(err.message);
       }
-      loadUsers();
     }
 
     document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.addEventListener("langchange", loadUsers);
 
     init();
   </script>
