@@ -1,0 +1,131 @@
+:root {
+  --bg-gradient-start: #fdf2f8;
+  --bg-gradient-mid: #fce7f3;
+  --bg-gradient-end: #fbcfe8;
+  --surface: #ffffff;
+  --surface-alt: #fdf2f8;
+  --border: #fce7f3;
+  --border-strong: #fbcfe8;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
+  --input-bg: #ffffff;
+  --overlay: rgba(30, 41, 59, 0.45);
+}
+
+[data-theme="dark"] {
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-mid: #1e1b2e;
+  --bg-gradient-end: #2d1f3d;
+  --surface: #1e293b;
+  --surface-alt: #0f172a;
+  --border: #334155;
+  --border-strong: #475569;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --input-bg: #0f172a;
+  --overlay: rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] body {
+  background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 45%, var(--bg-gradient-end) 100%) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] .board,
+[data-theme="dark"] .card,
+[data-theme="dark"] .login-modal,
+[data-theme="dark"] .celebration-box,
+[data-theme="dark"] nav {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text);
+}
+
+[data-theme="dark"] .progress-section,
+[data-theme="dark"] .plan-setup,
+[data-theme="dark"] .stats-box,
+[data-theme="dark"] .feature-card {
+  background: var(--surface-alt) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="dark"] .cell {
+  background: #334155 !important;
+  color: #f9a8d4 !important;
+}
+
+[data-theme="dark"] .cell:hover:not(.checked) {
+  background: #475569 !important;
+}
+
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .btn-outline,
+[data-theme="dark"] .reset-btn,
+[data-theme="dark"] .top-bar-actions button {
+  background: var(--surface-alt) !important;
+  color: #f9a8d4 !important;
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .goal-number,
+[data-theme="dark"] .title,
+[data-theme="dark"] .top-bar h1,
+[data-theme="dark"] .card h2 {
+  color: #f9a8d4 !important;
+}
+
+[data-theme="dark"] .nav-links a,
+[data-theme="dark"] .btn-ghost,
+[data-theme="dark"] .goal-label,
+[data-theme="dark"] .progress-remaining,
+[data-theme="dark"] .welcome,
+[data-theme="dark"] .footer,
+[data-theme="dark"] .top-bar a {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .stat-item {
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .how-it-works {
+  background: var(--surface-alt) !important;
+}
+
+.theme-toggle {
+  background: var(--pink-light, #fce7f3);
+  border: 2px solid var(--pink-muted, #fbcfe8);
+  color: var(--pink-dark, #ec4899);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover { transform: scale(1.08); }
+
+[data-theme="dark"] .theme-toggle {
+  background: #334155;
+  border-color: #475569;
+  color: #fbbf24;
+}

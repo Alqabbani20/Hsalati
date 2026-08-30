@@ -9,7 +9,11 @@ const {
   getAllUsers,
   createUser,
   deleteUser,
+  getUserPlan,
+  saveUserPlan,
+  deleteUserPlan,
 } = require("./lib/db");
+const { generatePlan } = require("./lib/generatePlan");
 const {
   COOKIE_NAME,
   COOKIE_OPTIONS,
@@ -28,27 +32,28 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, admin: !!process.env.ADMIN_PASSWORD });
+  res.json({ ok: true, admin: !!process.env.ADMIN_PASSWORD, storage: process.env.BLOB_READ_WRITE_TOKEN ? "blob" : "file" });
 });
 
-// ── Auth API ──
+app.post("/api/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
 
-app.post("/api/login", (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    const user = await findUserByUsername(username.trim());
+    if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const token = signToken(user);
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+    res.json({ user: { id: user.id, username: user.username, role: user.role } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Login failed" });
   }
-
-  const user = findUserByUsername(username.trim());
-  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return res.status(401).json({ error: "Invalid username or password" });
-  }
-
-  const token = signToken(user);
-  res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
-  res.json({
-    user: { id: user.id, username: user.username, role: user.role },
-  });
 });
 
 app.post("/api/logout", (_req, res) => {
@@ -60,53 +65,124 @@ app.get("/api/me", authMiddleware, (req, res) => {
   res.json({ user: req.user });
 });
 
-// ── Admin API ──
-
-app.get("/api/users", authMiddleware, adminMiddleware, (_req, res) => {
-  res.json({ users: getAllUsers() });
+app.get("/api/users", authMiddleware, adminMiddleware, async (_req, res) => {
+  try {
+    res.json({ users: await getAllUsers() });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load users" });
+  }
 });
 
-app.post("/api/users", authMiddleware, adminMiddleware, (req, res) => {
-  const { username, password, role = "user" } = req.body;
+app.post("/api/users", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { username, password, role = "user" } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
-  }
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
 
-  const trimmed = username.trim();
-  if (trimmed.length < 3) {
-    return res.status(400).json({ error: "Username must be at least 3 characters" });
-  }
-  if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
-  }
-  if (!["user", "admin"].includes(role)) {
-    return res.status(400).json({ error: "Role must be user or admin" });
-  }
-  if (findUserByUsername(trimmed)) {
-    return res.status(409).json({ error: "Username already exists" });
-  }
+    const trimmed = username.trim();
+    if (trimmed.length < 3) {
+      return res.status(400).json({ error: "Username must be at least 3 characters" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({ error: "Role must be user or admin" });
+    }
+    if (await findUserByUsername(trimmed)) {
+      return res.status(409).json({ error: "Username already exists" });
+    }
 
-  const hash = bcrypt.hashSync(password, 10);
-  const user = createUser(trimmed, hash, role);
-  res.status(201).json({ user });
+    const hash = bcrypt.hashSync(password, 10);
+    const user = await createUser(trimmed, hash, role);
+    res.status(201).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create user" });
+  }
 });
 
-app.delete("/api/users/:id", authMiddleware, adminMiddleware, (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
+app.delete("/api/users/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
 
-  const target = findUserById(id);
-  if (!target) return res.status(404).json({ error: "User not found" });
-  if (target.id === req.user.id) {
-    return res.status(400).json({ error: "You cannot delete your own account" });
+    const target = await findUserById(id);
+    if (!target) return res.status(404).json({ error: "User not found" });
+    if (target.id === req.user.id) {
+      return res.status(400).json({ error: "You cannot delete your own account" });
+    }
+
+    await deleteUser(id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete user" });
   }
-
-  deleteUser(id);
-  res.json({ ok: true });
 });
 
-// ── Protected pages (server-side redirect) ──
+// ── Savings plan API ──
+
+app.get("/api/plan", authMiddleware, async (req, res) => {
+  try {
+    const plan = await getUserPlan(req.user.id);
+    res.json({ plan });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load plan" });
+  }
+});
+
+app.post("/api/plan", authMiddleware, async (req, res) => {
+  try {
+    const { goal, days } = req.body;
+    const goalNum = Math.round(Number(goal));
+    const daysNum = Math.round(Number(days));
+
+    if (!goalNum || goalNum < 10 || goalNum > 50000) {
+      return res.status(400).json({ error: "Goal must be between 10 and 50,000 KD" });
+    }
+    if (!daysNum || daysNum < 1 || daysNum > 365) {
+      return res.status(400).json({ error: "Days must be between 1 and 365" });
+    }
+
+    const plan = generatePlan(goalNum, daysNum);
+    await saveUserPlan(req.user.id, plan);
+    res.status(201).json({ plan });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create plan" });
+  }
+});
+
+app.put("/api/plan/check", authMiddleware, async (req, res) => {
+  try {
+    const plan = await getUserPlan(req.user.id);
+    if (!plan) return res.status(404).json({ error: "No plan found" });
+
+    plan.checked = req.body.checked || {};
+    await saveUserPlan(req.user.id, plan);
+    res.json({ plan });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save progress" });
+  }
+});
+
+app.delete("/api/plan", authMiddleware, async (req, res) => {
+  try {
+    await deleteUserPlan(req.user.id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete plan" });
+  }
+});
+
+// ── Protected pages ──
 
 app.get("/challenge.html", (req, res, next) => {
   const token = req.cookies[COOKIE_NAME];
@@ -123,8 +199,6 @@ app.get("/admin.html", (req, res, next) => {
   }
   next();
 });
-
-// ── Static files (block sensitive paths first) ──
 
 const BLOCKED_PATHS = /^\/(data|lib|node_modules|api)(\/|$)|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
 

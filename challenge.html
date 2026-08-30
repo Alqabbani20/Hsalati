@@ -7,315 +7,123 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <script src="theme.js"></script>
   <style>
     :root {
-      --pink: #f472b6;
-      --pink-dark: #ec4899;
-      --pink-light: #fce7f3;
-      --pink-soft: #fdf2f8;
-      --pink-muted: #fbcfe8;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --white: #ffffff;
-      --green: #22c55e;
-      --green-glow: rgba(34, 197, 94, 0.35);
+      --pink: #f472b6; --pink-dark: #ec4899; --pink-light: #fce7f3;
+      --pink-soft: #fdf2f8; --pink-muted: #fbcfe8;
+      --text: #1e293b; --text-muted: #64748b; --white: #ffffff;
+      --green: #22c55e; --green-glow: rgba(34, 197, 94, 0.35);
       --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       min-height: 100vh;
       background: linear-gradient(160deg, var(--pink-soft) 0%, var(--pink-light) 45%, var(--pink-muted) 100%);
-      font-family: "Inter", sans-serif;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: "Inter", sans-serif; color: var(--text);
+      display: flex; flex-direction: column; align-items: center;
       padding: 24px 16px 40px;
     }
-
     .top-bar {
-      align-self: flex-start;
-      max-width: 680px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      align-self: flex-start; max-width: 680px; width: 100%;
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
     }
-
-    .top-bar a {
-      color: var(--pink-dark);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
+    .top-bar a { color: var(--pink-dark); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+    .top-bar-actions { display: flex; gap: 10px; align-items: center; }
+    .top-bar-actions button, .top-bar-actions a.btn-sm {
+      background: var(--pink-light); border: 1px solid var(--pink-muted); color: var(--pink-dark);
+      font-size: 0.78rem; padding: 5px 12px; border-radius: 99px; cursor: pointer;
+      font-family: inherit; font-weight: 600; text-decoration: none;
     }
-
-    .top-bar-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .top-bar-actions button {
-      background: var(--pink-light);
-      border: 1px solid var(--pink-muted);
-      color: var(--pink-dark);
-      font-size: 0.78rem;
-      padding: 5px 12px;
-      border-radius: 99px;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600;
-    }
-
-    .back-link {
-      align-self: flex-start;
-      max-width: 680px;
-      width: 100%;
-      margin-bottom: 12px;
-    }
-
-    .back-link a {
-      color: var(--pink-dark);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
     .board {
-      width: 100%;
-      max-width: 680px;
-      background: var(--white);
-      border-radius: 24px;
-      box-shadow: var(--shadow-lg);
-      padding: 28px 24px 20px;
-      border: 2px solid var(--pink-light);
+      width: 100%; max-width: 680px; background: var(--white);
+      border-radius: 24px; box-shadow: var(--shadow-lg);
+      padding: 28px 24px 20px; border: 2px solid var(--pink-light);
     }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-      gap: 12px;
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 12px; }
+    .goal-number { font-size: clamp(2.4rem, 9vw, 3.6rem); font-weight: 800; line-height: 1; color: var(--pink-dark); }
+    .goal-currency { font-size: clamp(1rem, 3.5vw, 1.35rem); font-weight: 600; color: var(--pink); }
+    .goal-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .title { font-family: "Amiri", serif; font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 700; color: var(--pink-dark); }
+    .plan-setup {
+      background: var(--pink-soft); border-radius: 16px; padding: 24px;
+      border: 1px solid var(--pink-light); text-align: center;
     }
-
-    .goal-number {
-      font-size: clamp(2.4rem, 9vw, 3.6rem);
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -1px;
-      color: var(--pink-dark);
+    .plan-setup h2 { font-family: "Amiri", serif; font-size: 1.5rem; color: var(--pink-dark); margin-bottom: 8px; }
+    .plan-setup p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; line-height: 1.6; }
+    .plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; text-align: right; }
+    .plan-form label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+    .plan-form input {
+      width: 100%; padding: 12px 14px; border: 2px solid var(--pink-light);
+      border-radius: 12px; font-size: 1rem; font-family: inherit; outline: none;
     }
-
-    .goal-currency {
-      font-size: clamp(1rem, 3.5vw, 1.35rem);
-      font-weight: 600;
-      color: var(--pink);
+    .plan-form input:focus { border-color: var(--pink); }
+    .btn-create-plan {
+      background: var(--pink); color: white; border: none; padding: 14px 32px;
+      border-radius: 99px; font-size: 1rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35); width: 100%;
     }
-
-    .goal-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 600;
+    .btn-create-plan:hover { background: var(--pink-dark); }
+    .plan-info {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+      font-size: 0.82rem; color: var(--text-muted);
     }
-
-    .title {
-      font-family: "Amiri", serif;
-      font-size: clamp(1.8rem, 5vw, 2.4rem);
-      font-weight: 700;
-      text-align: left;
-      direction: rtl;
-      line-height: 1.2;
-      color: var(--pink-dark);
-    }
-
+    .plan-info span { background: var(--pink-soft); padding: 6px 12px; border-radius: 99px; }
     .progress-section {
-      background: var(--pink-soft);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 22px;
-      border: 1px solid var(--pink-light);
+      background: var(--pink-soft); border-radius: 16px; padding: 14px 16px;
+      margin-bottom: 22px; border: 1px solid var(--pink-light);
     }
-
-    .progress-stats {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 10px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .progress-stats .saved {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--green);
-    }
-
-    .progress-bar-track {
-      height: 10px;
-      background: var(--pink-light);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-
+    .progress-stats { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; color: var(--text-muted); }
+    .progress-stats .saved { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+    .progress-bar-track { height: 10px; background: var(--pink-light); border-radius: 99px; overflow: hidden; }
     .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #16a34a, var(--green));
-      border-radius: 99px;
-      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 0 12px var(--green-glow);
+      height: 100%; background: linear-gradient(90deg, #16a34a, var(--green));
+      border-radius: 99px; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-
-    .progress-remaining {
-      margin-top: 8px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(11, 1fr);
-      gap: 8px;
-    }
-
+    .progress-remaining { margin-top: 8px; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(11, 1fr); gap: 8px; }
     .cell {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(0.65rem, 2.4vw, 0.9rem);
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 50%;
-      position: relative;
-      user-select: none;
-      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
-      background: var(--pink-light);
-      color: var(--pink-dark);
-      border: 2px solid transparent;
-      font-family: inherit;
-      -webkit-tap-highlight-color: transparent;
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      font-size: clamp(0.6rem, 2.2vw, 0.85rem); font-weight: 700; cursor: pointer;
+      border-radius: 50%; position: relative; background: var(--pink-light); color: var(--pink-dark);
+      border: 2px solid transparent; font-family: inherit; transition: transform 0.12s;
     }
-
-    .cell:hover:not(.checked) {
-      background: var(--pink-muted);
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(244, 114, 182, 0.25);
-    }
-
-    .cell:active { transform: scale(0.92); }
-
-    .cell.checked {
-      background: rgba(34, 197, 94, 0.12);
-      border-color: rgba(34, 197, 94, 0.35);
-    }
-
+    .cell:hover:not(.checked) { background: var(--pink-muted); transform: scale(1.05); }
+    .cell.checked { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); }
     .cell.checked .amount { opacity: 0.2; }
-
     .cell .check {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(0.9rem, 3vw, 1.15rem);
-      color: var(--green);
-      opacity: 0;
-      transform: scale(0.4);
-      transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: clamp(0.85rem, 2.8vw, 1.1rem); color: var(--green);
+      opacity: 0; transform: scale(0.4); transition: opacity 0.2s, transform 0.25s;
     }
-
     .cell.checked .check { opacity: 1; transform: scale(1); }
-
-    .footer {
-      margin-top: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
+    .footer { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--text-muted); }
     .reset-btn {
-      background: var(--pink-light);
-      border: 1px solid var(--pink-muted);
-      color: var(--pink-dark);
-      font-size: 0.72rem;
-      padding: 6px 14px;
-      border-radius: 99px;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600;
-      transition: background 0.15s;
+      background: var(--pink-light); border: 1px solid var(--pink-muted); color: var(--pink-dark);
+      font-size: 0.72rem; padding: 6px 14px; border-radius: 99px; cursor: pointer; font-family: inherit; font-weight: 600;
     }
-
-    .reset-btn:hover { background: var(--pink-muted); }
-
     .celebration {
-      position: fixed;
-      inset: 0;
-      background: rgba(30, 41, 59, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
+      position: fixed; inset: 0; background: var(--overlay, rgba(30,41,59,0.45));
+      display: flex; align-items: center; justify-content: center; z-index: 100;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s;
     }
-
     .celebration.show { opacity: 1; pointer-events: all; }
-
     .celebration-box {
-      background: var(--white);
-      border: 2px solid var(--green);
-      border-radius: 24px;
-      padding: 36px 48px;
-      text-align: center;
-      transform: scale(0.8);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: var(--shadow-lg);
+      background: var(--white); border: 2px solid var(--green); border-radius: 24px;
+      padding: 36px 48px; text-align: center; transform: scale(0.8); transition: transform 0.4s;
     }
-
     .celebration.show .celebration-box { transform: scale(1); }
-
-    .celebration-box h2 {
-      font-family: "Amiri", serif;
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-      color: var(--pink-dark);
-    }
-
-    .celebration-box p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
-
+    .celebration-box h2 { font-family: "Amiri", serif; font-size: 1.8rem; color: var(--pink-dark); margin-bottom: 8px; }
+    .celebration-box p { color: var(--text-muted); margin-bottom: 20px; }
     .celebration-box button {
-      background: var(--green);
-      border: none;
-      color: white;
-      padding: 10px 28px;
-      border-radius: 99px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
+      background: var(--green); border: none; color: white; padding: 10px 28px;
+      border-radius: 99px; font-weight: 600; cursor: pointer; font-family: inherit;
     }
-
-    @media (max-width: 420px) {
-      .board { padding: 20px 12px 16px; }
-      .grid { gap: 5px; }
-    }
+    .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
+    .error-msg.show { display: block; }
+    .hidden { display: none !important; }
+    @media (max-width: 520px) { .plan-form { grid-template-columns: 1fr; } .grid { gap: 5px; } }
   </style>
 </head>
 <body>
@@ -324,154 +132,225 @@
     <a href="index.html">← Home</a>
     <div class="top-bar-actions">
       <span id="userLabel" style="font-size:0.78rem;color:var(--text-muted)"></span>
-      <a href="admin.html" id="adminLink" style="display:none;font-size:0.78rem;color:var(--pink-dark)">Admin</a>
+      <a href="admin.html" id="adminLink" class="btn-sm" style="display:none">Admin</a>
+      <button class="theme-toggle" title="Dark mode">🌙</button>
       <button id="logoutBtn">Logout</button>
     </div>
   </div>
 
   <div class="board">
-    <header class="header">
-      <div>
-        <div class="goal-number"><span id="goalDisplay">1500</span><span class="goal-currency">KD</span></div>
-        <div class="goal-label">الهدف — Kuwaiti Dinar</div>
-      </div>
-      <h1 class="title">حصالتي</h1>
-    </header>
+    <!-- Plan setup (shown when no plan) -->
+    <div id="planSetup" class="plan-setup hidden">
+      <h2>أنشئ خطتك</h2>
+      <p>حدد مبلغ التوفير والمدة بالأيام — سنبني لك خطة يومية تلقائياً</p>
+      <form id="planForm">
+        <div class="plan-form">
+          <div>
+            <label for="goalInput">المبلغ (KD)</label>
+            <input type="number" id="goalInput" min="10" max="50000" placeholder="500" required />
+          </div>
+          <div>
+            <label for="daysInput">عدد الأيام</label>
+            <input type="number" id="daysInput" min="1" max="365" placeholder="30" required />
+          </div>
+        </div>
+        <button type="submit" class="btn-create-plan">إنشاء الخطة ✨</button>
+        <div class="error-msg" id="planError"></div>
+      </form>
+    </div>
 
-    <section class="progress-section">
-      <div class="progress-stats">
-        <span>موفر: <span class="saved" id="savedAmount">0 KD</span></span>
-        <span id="percentText">0%</span>
-      </div>
-      <div class="progress-bar-track">
-        <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
-      </div>
-      <div class="progress-remaining" id="remainingText">1500 KD remaining to reach your goal</div>
-    </section>
+    <!-- Savings board (shown when plan exists) -->
+    <div id="boardView" class="hidden">
+      <header class="header">
+        <div>
+          <div class="goal-number"><span id="goalDisplay">0</span><span class="goal-currency"> KD</span></div>
+          <div class="goal-label">الهدف — Kuwaiti Dinar</div>
+        </div>
+        <h1 class="title">حصالتي</h1>
+      </header>
 
-    <div class="grid" id="grid"></div>
+      <div class="plan-info">
+        <span id="daysInfo">📅 0 days</span>
+        <span id="dailyInfo">💰 ~0 KD/day</span>
+        <span id="cellsInfo">🎯 0 savings slots</span>
+      </div>
 
-    <footer class="footer">
-      <button class="reset-btn" id="resetBtn">Reset progress</button>
-      <span>@hisaluh</span>
-    </footer>
+      <section class="progress-section">
+        <div class="progress-stats">
+          <span>موفر: <span class="saved" id="savedAmount">0 KD</span></span>
+          <span id="percentText">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <div class="progress-remaining" id="remainingText"></div>
+      </section>
+
+      <div class="grid" id="grid"></div>
+
+      <footer class="footer">
+        <button class="reset-btn" id="newPlanBtn">خطة جديدة</button>
+        <button class="reset-btn" id="resetBtn">Reset progress</button>
+      </footer>
+    </div>
   </div>
 
   <div class="celebration" id="celebration">
     <div class="celebration-box">
       <div style="font-size:3rem;margin-bottom:12px">🎉</div>
       <h2>مبروك!</h2>
-      <p>You reached your savings goal of 1500 KD!</p>
+      <p id="celebrationText">You reached your goal!</p>
       <button id="closeCelebration">Continue</button>
     </div>
   </div>
 
   <script src="auth.js"></script>
   <script>
-    requireAuth().then(user => {
-      if (!user) return;
-      document.getElementById("userLabel").textContent = user.username;
-      if (user.role === "admin") {
-        document.getElementById("adminLink").style.display = "inline";
-      }
-    });
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-
-    const GOAL = 1500;
     const CURRENCY = "KD";
-    const STORAGE_KEY = "piggy-bank-kd-v1";
+    let currentUser = null;
+    let plan = null;
+    let saveTimer = null;
 
-    const GRID = [
-      [1, 18, 12, 5, 9, 17, 12, 7, 16, 14, 5],
-      [1, 20, 12, 6, 7, 17, 14, 7, 12, 9, 5],
-      [1, 1, 2, 7, 4, 16, 11, 8, 7, 6, 4],
-      [2, 19, 11, 6, 7, 15, 12, 8, 6, 9, 5],
-      [4, 20, 11, 7, 8, 14, 13, 9, 7, 11, 6],
-      [5, 21, 11, 8, 9, 13, 14, 11, 8, 12, 7],
-      [6, 21, 11, 9, 11, 12, 15, 12, 9, 13, 8],
-      [7, 22, 11, 11, 12, 11, 16, 13, 11, 14, 9],
-      [8, 20, 11, 12, 13, 9, 17, 14, 12, 15, 11],
-      [9, 20, 11, 13, 14, 8, 19, 15, 13, 16, 12],
-      [11, 20, 11, 14, 15, 7, 20, 16, 14, 17, 13],
-      [12, 18, 11, 15, 16, 6, 21, 17, 15, 19, 14],
-    ];
-
-    function formatAmount(amount) { return `${amount} ${CURRENCY}`; }
-
-    let checked = loadState();
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch { return {}; }
-    }
-
-    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(checked)); }
-    function cellKey(row, col) { return `${row}-${col}`; }
+    function formatAmount(n) { return `${n} ${CURRENCY}`; }
+    function cellKey(r, c) { return `${r}-${c}`; }
 
     function getSavedTotal() {
+      if (!plan) return 0;
       let total = 0;
-      GRID.forEach((row, r) => row.forEach((amount, c) => {
-        if (checked[cellKey(r, c)]) total += amount;
+      plan.grid.forEach((row, r) => row.forEach((amt, c) => {
+        if (plan.checked[cellKey(r, c)]) total += amt;
       }));
       return total;
     }
 
     function updateProgress() {
       const saved = getSavedTotal();
-      const pct = Math.min(100, Math.round((saved / GOAL) * 100));
-      const remaining = Math.max(0, GOAL - saved);
+      const goal = plan.goal;
+      const pct = Math.min(100, Math.round((saved / goal) * 100));
+      const remaining = Math.max(0, goal - saved);
 
       document.getElementById("savedAmount").textContent = formatAmount(saved);
       document.getElementById("percentText").textContent = pct + "%";
       document.getElementById("progressFill").style.width = pct + "%";
       document.getElementById("remainingText").textContent =
-        remaining === 0 ? "Goal reached! Well done!" : `${formatAmount(remaining)} remaining to reach your goal`;
+        remaining === 0 ? "🎉 Goal reached!" : `${formatAmount(remaining)} remaining`;
 
-      if (saved >= GOAL) document.getElementById("celebration").classList.add("show");
+      if (saved >= goal) {
+        document.getElementById("celebrationText").textContent = `You saved ${formatAmount(goal)}!`;
+        document.getElementById("celebration").classList.add("show");
+      }
     }
 
     function buildGrid() {
       const gridEl = document.getElementById("grid");
       gridEl.innerHTML = "";
+      const cols = plan.grid[0]?.length || 11;
+      gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-      GRID.forEach((row, r) => row.forEach((amount, c) => {
+      plan.grid.forEach((row, r) => row.forEach((amount, c) => {
         const key = cellKey(r, c);
-        const isChecked = !!checked[key];
+        const isChecked = !!plan.checked[key];
         const cell = document.createElement("button");
         cell.className = "cell" + (isChecked ? " checked" : "");
-        cell.setAttribute("aria-label", `Save ${formatAmount(amount)}`);
-        cell.setAttribute("aria-pressed", isChecked);
-        cell.innerHTML = `<span class="amount">${amount}</span><span class="check" aria-hidden="true">✓</span>`;
+        cell.innerHTML = `<span class="amount">${amount}</span><span class="check">✓</span>`;
         cell.addEventListener("click", () => {
-          checked[key] = !checked[key];
-          cell.classList.toggle("checked", checked[key]);
-          cell.setAttribute("aria-pressed", checked[key]);
-          if (!checked[key]) delete checked[key];
-          saveState();
+          plan.checked[key] = !plan.checked[key];
+          if (!plan.checked[key]) delete plan.checked[key];
+          cell.classList.toggle("checked", !!plan.checked[key]);
           updateProgress();
+          scheduleSave();
         });
         gridEl.appendChild(cell);
       }));
     }
 
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      if (confirm("Reset all saved progress? This cannot be undone.")) {
-        checked = {};
-        saveState();
-        buildGrid();
-        updateProgress();
-        document.getElementById("celebration").classList.remove("show");
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        await fetch("/api/plan/check", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ checked: plan.checked }),
+        });
+      }, 400);
+    }
+
+    function showBoard(p) {
+      plan = p;
+      document.getElementById("planSetup").classList.add("hidden");
+      document.getElementById("boardView").classList.remove("hidden");
+      document.getElementById("goalDisplay").textContent = plan.goal;
+      document.getElementById("daysInfo").textContent = `📅 ${plan.days} days`;
+      document.getElementById("dailyInfo").textContent = `💰 ~${plan.dailyTarget} KD/day`;
+      const totalCells = plan.grid.flat().length;
+      document.getElementById("cellsInfo").textContent = `🎯 ${totalCells} savings slots`;
+      buildGrid();
+      updateProgress();
+    }
+
+    function showSetup() {
+      document.getElementById("planSetup").classList.remove("hidden");
+      document.getElementById("boardView").classList.add("hidden");
+      plan = null;
+    }
+
+    async function loadPlan() {
+      const res = await fetch("/api/plan");
+      const data = await res.json();
+      if (data.plan) showBoard(data.plan);
+      else showSetup();
+    }
+
+    document.getElementById("planForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById("planError");
+      errEl.classList.remove("show");
+
+      const goal = document.getElementById("goalInput").value;
+      const days = document.getElementById("daysInput").value;
+
+      const res = await fetch("/api/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal, days }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.error || "Failed to create plan";
+        errEl.classList.add("show");
+        return;
       }
+      showBoard(data.plan);
+    });
+
+    document.getElementById("newPlanBtn").addEventListener("click", async () => {
+      if (!confirm("Create a new plan? Your current progress will be lost.")) return;
+      await fetch("/api/plan", { method: "DELETE" });
+      showSetup();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("Reset checked amounts?")) return;
+      plan.checked = {};
+      scheduleSave();
+      buildGrid();
+      updateProgress();
+      document.getElementById("celebration").classList.remove("show");
     });
 
     document.getElementById("closeCelebration").addEventListener("click", () => {
       document.getElementById("celebration").classList.remove("show");
     });
 
-    buildGrid();
-    updateProgress();
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    requireAuth().then(user => {
+      if (!user) return;
+      currentUser = user;
+      document.getElementById("userLabel").textContent = user.username;
+      if (user.role === "admin") document.getElementById("adminLink").style.display = "inline";
+      loadPlan();
+    });
   </script>
 </body>
 </html>

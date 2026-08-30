@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <script src="theme.js"></script>
   <style>
     :root {
       --pink: #f472b6;
@@ -41,6 +43,7 @@
       padding: 40px 36px;
       box-shadow: var(--shadow-lg);
       border: 2px solid var(--pink-light);
+      position: relative;
     }
 
     .logo-wrap {
@@ -151,6 +154,7 @@
 <body>
 
   <div class="card">
+    <button class="theme-toggle" style="position:absolute;top:14px;left:14px" title="Dark mode">🌙</button>
     <div class="logo-wrap">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <ellipse cx="32" cy="38" rx="22" ry="20" fill="#fbcfe8"/>

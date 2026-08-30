@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <script src="theme.js"></script>
   <style>
     :root {
       --pink: #f472b6;
@@ -828,10 +830,12 @@
       <li><a href="#about">About Us</a></li>
     </ul>
     <div class="nav-actions nav-guest" id="navGuest">
+      <button class="theme-toggle" title="Dark mode">🌙</button>
       <button class="btn-ghost" id="openLoginBtn">Login</button>
       <button class="btn-primary" id="openLoginBtn2">Sign Up</button>
     </div>
     <div class="nav-user" id="navUser">
+      <button class="theme-toggle" title="Dark mode">🌙</button>
       <span id="navUsername"></span>
       <a href="challenge.html" class="btn-ghost">حصالتي</a>
       <a href="admin.html" class="btn-ghost" id="navAdminLink" style="display:none">Admin</a>
