@@ -1,5 +1,9 @@
--- Hsalati schema — run in Supabase SQL Editor (safe to re-run)
+-- Hsalati schema - run in Supabase SQL Editor (safe to re-run)
+-- Tip: if you see "Backend error", run ONE block at a time (Part 1, then Part 2, ...)
 
+create extension if not exists pgcrypto;
+
+-- ========== PART 1: users ==========
 create table if not exists public.users (
   id            bigserial primary key,
   username      text not null,
@@ -9,20 +13,31 @@ create table if not exists public.users (
   created_at    timestamptz not null default now()
 );
 
+create unique index if not exists users_username_lower_idx on public.users (lower(username));
+alter table public.users add column if not exists disabled_at timestamptz;
+alter table public.users disable row level security;
+
+-- ========== PART 2: savings_plans ==========
 create table if not exists public.savings_plans (
   id                uuid primary key default gen_random_uuid(),
   user_id           bigint not null references public.users(id) on delete cascade,
   name              text not null,
   goal              integer not null,
   days              integer not null,
-  grid              jsonb not null default '[]',
-  checked           jsonb not null default '{}',
-  partials          jsonb not null default '{}',
-  milestones_shown  jsonb not null default '{}',
+  grid              jsonb not null default '[]'::jsonb,
+  checked           jsonb not null default '{}'::jsonb,
+  partials          jsonb not null default '{}'::jsonb,
+  milestones_shown  jsonb not null default '{}'::jsonb,
   daily_target      numeric(10, 1) not null default 0,
   created_at        timestamptz not null default now()
 );
 
+create index if not exists savings_plans_user_id_idx on public.savings_plans(user_id);
+alter table public.savings_plans add column if not exists partials jsonb not null default '{}'::jsonb;
+alter table public.savings_plans add column if not exists milestones_shown jsonb not null default '{}'::jsonb;
+alter table public.savings_plans disable row level security;
+
+-- ========== PART 3: other tables ==========
 create table if not exists public.user_profiles (
   user_id               bigint primary key references public.users(id) on delete cascade,
   onboarding_completed  boolean not null default false,
@@ -49,7 +64,7 @@ create table if not exists public.user_badges (
 create table if not exists public.survey_responses (
   id          uuid primary key default gen_random_uuid(),
   user_id     bigint not null references public.users(id) on delete cascade,
-  answers     jsonb not null default '{}',
+  answers     jsonb not null default '{}'::jsonb,
   created_at  timestamptz not null default now()
 );
 
@@ -57,28 +72,16 @@ create table if not exists public.activity_log (
   id          uuid primary key default gen_random_uuid(),
   user_id     bigint references public.users(id) on delete set null,
   action      text not null,
-  details     jsonb default '{}',
+  details     jsonb default '{}'::jsonb,
   created_at  timestamptz not null default now()
 );
 
-create unique index if not exists users_username_lower_idx on public.users (lower(username));
-create index if not exists savings_plans_user_id_idx on public.savings_plans(user_id);
 create index if not exists save_events_user_id_idx on public.save_events(user_id);
 create index if not exists save_events_created_at_idx on public.save_events(created_at desc);
 create index if not exists activity_log_created_at_idx on public.activity_log(created_at desc);
 
-alter table public.users disable row level security;
-alter table public.savings_plans disable row level security;
 alter table public.user_profiles disable row level security;
 alter table public.save_events disable row level security;
 alter table public.user_badges disable row level security;
 alter table public.survey_responses disable row level security;
 alter table public.activity_log disable row level security;
-
--- Migrate existing tables
-alter table public.users add column if not exists disabled_at timestamptz;
-alter table public.savings_plans add column if not exists partials jsonb not null default '{}';
-alter table public.savings_plans add column if not exists milestones_shown jsonb not null default '{}';
-
-drop policy if exists "deny anon users" on public.users;
-drop policy if exists "deny anon plans" on public.savings_plans;

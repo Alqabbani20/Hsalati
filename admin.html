@@ -539,7 +539,13 @@
       try {
         const data = await apiFetch("/api/schema");
         document.getElementById("schemaSql").value = data.sql || "";
-      } catch { /* ignore */ }
+      } catch {
+        try {
+          const res = await fetch("/api/setup/schema");
+          const data = await res.json();
+          document.getElementById("schemaSql").value = data.sql || "";
+        } catch { /* ignore */ }
+      }
     }
 
     document.getElementById("copySchemaBtn").addEventListener("click", async () => {

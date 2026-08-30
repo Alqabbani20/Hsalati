@@ -94,12 +94,26 @@ app.post("/api/login", loginLimiter, async (req, res) => {
     }
 
     const trimmed = username.trim();
-    let user = await findUserByUsername(trimmed);
-
-    // Env bootstrap when DB unavailable (e.g. bad Supabase key)
     const adminUser = process.env.ADMIN_USERNAME || "Alqabbani";
     const adminPass = process.env.ADMIN_PASSWORD;
-    if (!user && adminPass && trimmed.toLowerCase() === adminUser.toLowerCase() && password === adminPass) {
+
+    let user = null;
+    let dbError = null;
+    try {
+      user = await findUserByUsername(trimmed);
+    } catch (err) {
+      // Tables missing / Supabase down — still allow env admin login so setup can continue
+      dbError = err;
+      console.warn("Login DB lookup failed:", err.message);
+    }
+
+    // Env admin bootstrap (works even when Supabase schema is not applied yet)
+    if (
+      !user &&
+      adminPass &&
+      trimmed.toLowerCase() === adminUser.toLowerCase() &&
+      password === adminPass
+    ) {
       user = {
         id: 1,
         username: adminUser,
@@ -109,7 +123,12 @@ app.post("/api/login", loginLimiter, async (req, res) => {
     }
 
     if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({
+        error: "Invalid username or password",
+        hint: dbError?.hint || (dbError && useSupabase()
+          ? "Database not ready — use ADMIN_USERNAME / ADMIN_PASSWORD from Vercel env vars"
+          : undefined),
+      });
     }
     if (user.disabled_at) {
       return res.status(403).json({ error: "Account disabled. Contact admin." });
@@ -117,7 +136,10 @@ app.post("/api/login", loginLimiter, async (req, res) => {
 
     const token = signToken(user);
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
-    res.json({ user: { id: user.id, username: user.username, role: user.role } });
+    res.json({
+      user: { id: user.id, username: user.username, role: user.role },
+      dbWarning: dbError ? (dbError.hint || dbError.message) : undefined,
+    });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({
