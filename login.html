@@ -185,6 +185,9 @@
       </div>
       <button type="submit" class="btn-login" id="submitBtn" data-i18n="loginBtn">دخول</button>
     </form>
+    <p style="text-align:center;margin-top:12px">
+      <button type="button" id="forgotBtn" style="background:none;border:none;color:var(--pink-dark);cursor:pointer;font-size:0.82rem;font-family:inherit" data-i18n="forgotPassword">نسيت كلمة المرور؟</button>
+    </p>
 
     <div class="back">
       <a href="index.html" data-i18n="backHome">← العودة للصفحة الرئيسية</a>
@@ -205,6 +208,24 @@
     getCurrentUser().then(user => {
       if (user) {
         window.location.href = user.role === "admin" ? "admin.html" : "challenge.html";
+      }
+    });
+
+    document.getElementById("forgotBtn").addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      if (!username) { errorEl.textContent = t("username"); errorEl.classList.add("show"); return; }
+      try {
+        await apiFetch("/api/password-reset-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        });
+        errorEl.style.background = "#f0fdf4"; errorEl.style.color = "#166534"; errorEl.style.borderColor = "#bbf7d0";
+        errorEl.textContent = t("resetRequested");
+        errorEl.classList.add("show");
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.add("show");
       }
     });
 

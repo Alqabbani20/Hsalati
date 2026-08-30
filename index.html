@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f472b6" />
+  <link rel="manifest" href="/manifest.json" />
   <title>حصالتي — Save Smart in KD</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -840,7 +842,8 @@
       <li><a href="#features" data-i18n="navFeatures">Features</a></li>
       <li><a href="#how-it-works" data-i18n="navHow">How It Works</a></li>
       <li><a href="challenge.html" id="navChallengeLink" data-i18n="navChallenge">Savings Challenge</a></li>
-      <li><a href="#about" data-i18n="navAbout">About Us</a></li>
+      <li><a href="dashboard.html" data-i18n="dashboard">Dashboard</a></li>
+      <li><a href="privacy.html" data-i18n="privacy">Privacy</a></li>
     </ul>
     <div class="nav-actions nav-guest" id="navGuest">
       <button type="button" class="lang-toggle">EN</button>
@@ -1040,7 +1043,7 @@
   <!-- Footer -->
   <footer>
     <span data-i18n="footerCopy">© 2026 حصالتي</span>
-    <span><span data-i18n="footerMade">Made with 💗 in Kuwait</span> · <a href="challenge.html" data-i18n="appName">حصالتي</a></span>
+    <span><span data-i18n="footerMade">Made with 💗 in Kuwait</span> · <a href="challenge.html" data-i18n="appName">حصالتي</a> · <a href="privacy.html" data-i18n="privacy">Privacy</a></span>
   </footer>
 
   <script src="auth.js"></script>
@@ -1130,10 +1133,16 @@
         (getLang() === "ar" ? "مرحباً، " : "Hello, ") + user.username + " 👋";
 
       try {
-        const data = await apiFetch("/api/plans");
-        const plans = data.plans || [];
+        const [plansData, dashData] = await Promise.all([
+          apiFetch("/api/plans"),
+          apiFetch(`/api/dashboard?lang=${getLang()}`).catch(() => null),
+        ]);
+        const plans = plansData.plans || [];
         const totalSaved = plans.reduce((sum, p) => sum + (p.saved || 0), 0);
         balanceEl.textContent = totalSaved + " KD";
+        if (dashData?.streak > 0) {
+          greetingEl.textContent += ` 🔥 ${dashData.streak}`;
+        }
         renderMiniChart(plans);
         renderPhoneGoals(plans, false);
       } catch {
@@ -1192,6 +1201,10 @@
 
     getCurrentUser().then(updateNav);
     document.addEventListener("langchange", () => loadPhoneData(currentUser));
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
   </script>
 </body>
 </html>

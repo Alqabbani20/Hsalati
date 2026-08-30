@@ -283,10 +283,23 @@
     </div>
 
     <div class="card">
+      <h2 data-i18n="importUsers">استيراد مستخدمين (CSV)</h2>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px" data-i18n="importHint">username,password,role</p>
+      <textarea id="importCsv" rows="4" style="width:100%;padding:10px;border:2px solid var(--pink-light);border-radius:10px;font-family:monospace;font-size:0.82rem;margin-bottom:12px" placeholder="user1,pass123,user&#10;user2,pass456,user"></textarea>
+      <button type="button" class="btn-create" id="importBtn" data-i18n="importBtn">استيراد</button>
+      <div class="msg" id="importMsg"></div>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="users">👥 المستخدمون</h2>
       <div id="usersTable">
         <div class="empty" data-i18n="loading">Loading...</div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="activityLog">سجل النشاط</h2>
+      <div id="activityTable"><div class="empty" data-i18n="loading">Loading...</div></div>
     </div>
   </div>
 
@@ -300,6 +313,7 @@
       document.getElementById("adminName").textContent = currentUser.username;
       checkStorage();
       loadUsers();
+      loadActivity();
     }
 
     async function checkStorage() {
@@ -338,19 +352,25 @@
               <tr>
                 <th>${t("colUsername")}</th>
                 <th>${t("colRole")}</th>
+                <th>${t("colStatus")}</th>
                 <th>${t("colCreated")}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               ${data.users.map(u => `
-                <tr>
+                <tr style="${u.disabled_at ? 'opacity:0.55' : ''}">
                   <td><strong>${escapeHtml(u.username)}</strong></td>
                   <td><span class="badge ${u.role}">${u.role}</span></td>
+                  <td>${u.disabled_at ? `<span class="badge user">${t("disabled")}</span>` : "—"}</td>
                   <td>${new Date(u.created_at).toLocaleDateString(getLang() === "ar" ? "ar-KW" : "en")}</td>
-                  <td>
-                    ${u.id !== currentUser.id
-                      ? `<button class="btn-delete" data-id="${u.id}" data-username="${escapeHtml(u.username)}">${t("delete")}</button>`
+                  <td style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${u.id !== currentUser.id ? `
+                      <button class="btn-delete btn-reset-pw" data-id="${u.id}" data-username="${escapeHtml(u.username)}" title="Reset PW">🔑</button>
+                      ${u.disabled_at
+                        ? `<button class="btn-outline btn-enable" data-id="${u.id}" style="padding:4px 10px;font-size:0.72rem">${t("enable")}</button>`
+                        : `<button class="btn-delete btn-disable" data-id="${u.id}">${t("disable")}</button>`}
+                      <button class="btn-delete" data-id="${u.id}" data-username="${escapeHtml(u.username)}">${t("delete")}</button>`
                       : `<span style="font-size:0.75rem;color:var(--text-muted)">${t("you")}</span>`}
                   </td>
                 </tr>
@@ -358,10 +378,18 @@
             </tbody>
           </table>`;
 
-        container.querySelectorAll(".btn-delete").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            deleteUser(Number(btn.dataset.id), btn.dataset.username);
-          });
+        container.querySelectorAll(".btn-delete:not(.btn-disable):not(.btn-enable):not(.btn-reset-pw)").forEach((btn) => {
+          if (!btn.dataset.username) return;
+          btn.addEventListener("click", () => deleteUser(Number(btn.dataset.id), btn.dataset.username));
+        });
+        container.querySelectorAll(".btn-disable").forEach((btn) => {
+          btn.addEventListener("click", () => toggleUser(Number(btn.dataset.id), "disable"));
+        });
+        container.querySelectorAll(".btn-enable").forEach((btn) => {
+          btn.addEventListener("click", () => toggleUser(Number(btn.dataset.id), "enable"));
+        });
+        container.querySelectorAll(".btn-reset-pw").forEach((btn) => {
+          btn.addEventListener("click", () => resetPassword(Number(btn.dataset.id), btn.dataset.username));
         });
       } catch (err) {
         container.innerHTML = `<div class="empty" style="color:var(--red)">${err.message}</div>`;
@@ -405,6 +433,80 @@
       loadUsers();
     });
 
+    async function toggleUser(id, action) {
+      try {
+        await apiFetch(`/api/users/${id}/${action}`, { method: "PATCH" });
+        loadUsers();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function resetPassword(id, username) {
+      const password = prompt(`${t("password")} — ${username}:`);
+      if (!password || password.length < 6) return;
+      try {
+        await apiFetch(`/api/users/${id}/password`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+        showMsg(t("passwordUpdated"), "success");
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function loadActivity() {
+      const container = document.getElementById("activityTable");
+      try {
+        const data = await apiFetch("/api/activity");
+        if (!data.activity?.length) {
+          container.innerHTML = `<div class="empty">${t("noDataYet")}</div>`;
+          return;
+        }
+        container.innerHTML = `
+          <table>
+            <thead><tr><th>${t("colUsername")}</th><th>Action</th><th>${t("colCreated")}</th></tr></thead>
+            <tbody>${data.activity.map((a) => `
+              <tr>
+                <td>${escapeHtml(a.username || "—")}</td>
+                <td><code style="font-size:0.75rem">${escapeHtml(a.action)}</code></td>
+                <td>${new Date(a.created_at).toLocaleString(getLang() === "ar" ? "ar-KW" : "en")}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>`;
+      } catch (err) {
+        container.innerHTML = `<div class="empty" style="color:var(--red)">${err.message}</div>`;
+      }
+    }
+
+    document.getElementById("importBtn").addEventListener("click", async () => {
+      const csv = document.getElementById("importCsv").value.trim();
+      if (!csv) return;
+      const users = csv.split("\n").map((line) => {
+        const [username, password, role] = line.split(",").map((s) => s.trim());
+        return { username, password, role: role || "user" };
+      }).filter((u) => u.username);
+      try {
+        const res = await apiFetch("/api/users/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ users }),
+        });
+        const msgEl = document.getElementById("importMsg");
+        msgEl.textContent = `${res.created} imported`;
+        msgEl.className = "msg show success";
+        document.getElementById("importCsv").value = "";
+        loadUsers();
+        loadActivity();
+      } catch (err) {
+        const msgEl = document.getElementById("importMsg");
+        msgEl.textContent = err.message;
+        msgEl.className = "msg show error";
+      }
+    });
+
     async function deleteUser(id, username) {
       if (!confirm(`${t("deleteUserConfirm")} "${username}"?`)) return;
 
@@ -417,7 +519,7 @@
     }
 
     document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.addEventListener("langchange", () => { checkStorage(); loadUsers(); });
+    document.addEventListener("langchange", () => { checkStorage(); loadUsers(); loadActivity(); });
 
     init();
   </script>

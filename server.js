@@ -14,6 +14,7 @@ const {
   addUserPlan,
   updateUserPlan,
   deleteUserPlanById,
+  updateUserPassword,
   storageMode,
   isPersistentStorage,
 } = require("./lib/db");
@@ -218,6 +219,7 @@ registerApiRoutes(app, {
   addUserPlan,
   updateUserPlan,
   deleteUserPlanById,
+  updateUserPassword,
   bcrypt,
   signToken,
   COOKIE_NAME,
