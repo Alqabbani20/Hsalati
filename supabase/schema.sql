@@ -85,3 +85,13 @@ alter table public.save_events disable row level security;
 alter table public.user_badges disable row level security;
 alter table public.survey_responses disable row level security;
 alter table public.activity_log disable row level security;
+
+-- API access + refresh PostgREST schema cache (fixes PGRST125 Invalid path)
+grant usage on schema public to postgres, anon, authenticated, service_role;
+grant all on all tables in schema public to postgres, anon, authenticated, service_role;
+grant all on all sequences in schema public to postgres, anon, authenticated, service_role;
+grant all on all routines in schema public to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+
+notify pgrst, 'reload schema';

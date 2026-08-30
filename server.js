@@ -52,7 +52,14 @@ app.get("/api/health", async (_req, res) => {
     supabaseConfigured: useSupabase(),
     needsSchema: false,
     supabaseHost: process.env.SUPABASE_URL
-      ? new URL(process.env.SUPABASE_URL).hostname
+      ? (() => {
+          try {
+            const { normalizeSupabaseUrl } = require("./lib/supabase");
+            return new URL(normalizeSupabaseUrl(process.env.SUPABASE_URL)).hostname;
+          } catch {
+            return "invalid-url";
+          }
+        })()
       : undefined,
     warning: storage === "ephemeral"
       ? "Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy"
