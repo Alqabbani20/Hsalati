@@ -630,6 +630,18 @@
           btn.addEventListener("click", () => resetPassword(Number(btn.dataset.id), btn.dataset.username));
         });
       } catch (err) {
+        const needsPatch = String(err.message || "").includes("disabled_at");
+        if (needsPatch) {
+          document.getElementById("schemaSetup").style.display = "block";
+          applySetupLabels();
+          try {
+            const res = await fetch("/api/setup/patch");
+            const patch = await res.json();
+            document.getElementById("schemaSql").value = patch.sql || "";
+          } catch {
+            loadSchemaSql();
+          }
+        }
         container.innerHTML = `<div class="empty" style="color:var(--red)">${escapeHtml(err.message)}${err.hint ? `<br><small>${escapeHtml(err.hint)}</small>` : ""}</div>`;
       }
     }

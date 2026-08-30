@@ -93,6 +93,11 @@ app.get("/api/setup/schema", (_req, res) => {
   res.json({ sql: fs.readFileSync(schemaPath, "utf8") });
 });
 
+app.get("/api/setup/patch", (_req, res) => {
+  const patchPath = path.join(__dirname, "supabase", "patch-disabled-at.sql");
+  res.json({ sql: fs.readFileSync(patchPath, "utf8") });
+});
+
 app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
