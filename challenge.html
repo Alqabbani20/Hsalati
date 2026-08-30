@@ -14,16 +14,14 @@
       --pink: #f472b6; --pink-dark: #ec4899; --pink-light: #fce7f3;
       --pink-soft: #fdf2f8; --pink-muted: #fbcfe8;
       --text: #1e293b; --text-muted: #64748b; --white: #ffffff;
-      --green: #22c55e; --green-glow: rgba(34, 197, 94, 0.35);
-      --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
+      --green: #22c55e; --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       background: linear-gradient(160deg, var(--pink-soft) 0%, var(--pink-light) 45%, var(--pink-muted) 100%);
       font-family: "Inter", sans-serif; color: var(--text);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 24px 16px 40px;
+      display: flex; flex-direction: column; align-items: center; padding: 24px 16px 40px;
     }
     .top-bar {
       align-self: flex-start; max-width: 680px; width: 100%;
@@ -41,68 +39,81 @@
       border-radius: 24px; box-shadow: var(--shadow-lg);
       padding: 28px 24px 20px; border: 2px solid var(--pink-light);
     }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 12px; }
-    .goal-number { font-size: clamp(2.4rem, 9vw, 3.6rem); font-weight: 800; line-height: 1; color: var(--pink-dark); }
-    .goal-currency { font-size: clamp(1rem, 3.5vw, 1.35rem); font-weight: 600; color: var(--pink); }
-    .goal-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-    .title { font-family: "Amiri", serif; font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 700; color: var(--pink-dark); }
+    .view-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; gap: 12px;
+    }
+    .view-header h1 { font-family: "Amiri", serif; font-size: 1.8rem; color: var(--pink-dark); }
+    .btn-pink {
+      background: var(--pink); color: white; border: none; padding: 10px 20px;
+      border-radius: 99px; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .btn-pink:hover { background: var(--pink-dark); }
+    .plans-list { display: flex; flex-direction: column; gap: 12px; }
+    .plan-card {
+      background: var(--pink-soft); border: 2px solid var(--pink-light); border-radius: 16px;
+      padding: 16px 18px; cursor: pointer; transition: transform 0.12s, border-color 0.15s;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .plan-card:hover { transform: translateY(-2px); border-color: var(--pink); }
+    .plan-card-info h3 { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .plan-card-info p { font-size: 0.78rem; color: var(--text-muted); }
+    .plan-card-progress { text-align: left; min-width: 70px; }
+    .plan-card-progress .pct { font-size: 1.2rem; font-weight: 800; color: var(--green); }
+    .plan-card-progress .saved { font-size: 0.72rem; color: var(--text-muted); }
+    .mini-bar { height: 6px; background: var(--pink-light); border-radius: 99px; margin-top: 6px; overflow: hidden; }
+    .mini-bar-fill { height: 100%; background: var(--green); border-radius: 99px; }
     .plan-setup {
       background: var(--pink-soft); border-radius: 16px; padding: 24px;
-      border: 1px solid var(--pink-light); text-align: center;
+      border: 1px solid var(--pink-light); margin-bottom: 20px;
     }
-    .plan-setup h2 { font-family: "Amiri", serif; font-size: 1.5rem; color: var(--pink-dark); margin-bottom: 8px; }
-    .plan-setup p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; line-height: 1.6; }
-    .plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; text-align: right; }
+    .plan-setup h2 { font-family: "Amiri", serif; font-size: 1.3rem; color: var(--pink-dark); margin-bottom: 8px; }
+    .plan-setup p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .plan-form.full { grid-template-columns: 1fr; }
     .plan-form label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
     .plan-form input {
-      width: 100%; padding: 12px 14px; border: 2px solid var(--pink-light);
-      border-radius: 12px; font-size: 1rem; font-family: inherit; outline: none;
+      width: 100%; padding: 11px 14px; border: 2px solid var(--pink-light);
+      border-radius: 12px; font-size: 0.95rem; font-family: inherit; outline: none;
     }
     .plan-form input:focus { border-color: var(--pink); }
-    .btn-create-plan {
-      background: var(--pink); color: white; border: none; padding: 14px 32px;
-      border-radius: 99px; font-size: 1rem; font-weight: 700; cursor: pointer;
-      font-family: inherit; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35); width: 100%;
-    }
-    .btn-create-plan:hover { background: var(--pink-dark); }
-    .plan-info {
-      display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
-      font-size: 0.82rem; color: var(--text-muted);
-    }
-    .plan-info span { background: var(--pink-soft); padding: 6px 12px; border-radius: 99px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
+    .goal-number { font-size: clamp(2rem, 8vw, 3rem); font-weight: 800; color: var(--pink-dark); line-height: 1; }
+    .goal-currency { font-size: 1rem; font-weight: 600; color: var(--pink); }
+    .goal-label { font-size: 0.75rem; color: var(--text-muted); }
+    .plan-name { font-family: "Amiri", serif; font-size: 1.4rem; color: var(--pink-dark); text-align: left; }
+    .plan-info { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-size: 0.82rem; color: var(--text-muted); }
+    .plan-info span { background: var(--pink-soft); padding: 5px 12px; border-radius: 99px; }
     .progress-section {
       background: var(--pink-soft); border-radius: 16px; padding: 14px 16px;
-      margin-bottom: 22px; border: 1px solid var(--pink-light);
+      margin-bottom: 20px; border: 1px solid var(--pink-light);
     }
     .progress-stats { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; color: var(--text-muted); }
     .progress-stats .saved { font-size: 1.1rem; font-weight: 700; color: var(--green); }
     .progress-bar-track { height: 10px; background: var(--pink-light); border-radius: 99px; overflow: hidden; }
-    .progress-bar-fill {
-      height: 100%; background: linear-gradient(90deg, #16a34a, var(--green));
-      border-radius: 99px; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #16a34a, var(--green)); border-radius: 99px; transition: width 0.4s; }
     .progress-remaining { margin-top: 8px; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
-    .grid { display: grid; grid-template-columns: repeat(11, 1fr); gap: 8px; }
+    .grid { display: grid; gap: 8px; }
     .cell {
       aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
       font-size: clamp(0.6rem, 2.2vw, 0.85rem); font-weight: 700; cursor: pointer;
       border-radius: 50%; position: relative; background: var(--pink-light); color: var(--pink-dark);
-      border: 2px solid transparent; font-family: inherit; transition: transform 0.12s;
+      border: 2px solid transparent; font-family: inherit;
     }
     .cell:hover:not(.checked) { background: var(--pink-muted); transform: scale(1.05); }
     .cell.checked { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); }
     .cell.checked .amount { opacity: 0.2; }
     .cell .check {
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      font-size: clamp(0.85rem, 2.8vw, 1.1rem); color: var(--green);
-      opacity: 0; transform: scale(0.4); transition: opacity 0.2s, transform 0.25s;
+      color: var(--green); opacity: 0; transform: scale(0.4); transition: opacity 0.2s, transform 0.25s;
     }
     .cell.checked .check { opacity: 1; transform: scale(1); }
-    .footer { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--text-muted); }
+    .footer { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
     .reset-btn {
       background: var(--pink-light); border: 1px solid var(--pink-muted); color: var(--pink-dark);
       font-size: 0.72rem; padding: 6px 14px; border-radius: 99px; cursor: pointer; font-family: inherit; font-weight: 600;
     }
+    .btn-delete-plan { background: none; border: 1px solid #fecaca; color: #ef4444; }
     .celebration {
       position: fixed; inset: 0; background: var(--overlay, rgba(30,41,59,0.45));
       display: flex; align-items: center; justify-content: center; z-index: 100;
@@ -111,19 +122,19 @@
     .celebration.show { opacity: 1; pointer-events: all; }
     .celebration-box {
       background: var(--white); border: 2px solid var(--green); border-radius: 24px;
-      padding: 36px 48px; text-align: center; transform: scale(0.8); transition: transform 0.4s;
+      padding: 36px 48px; text-align: center;
     }
-    .celebration.show .celebration-box { transform: scale(1); }
     .celebration-box h2 { font-family: "Amiri", serif; font-size: 1.8rem; color: var(--pink-dark); margin-bottom: 8px; }
-    .celebration-box p { color: var(--text-muted); margin-bottom: 20px; }
     .celebration-box button {
       background: var(--green); border: none; color: white; padding: 10px 28px;
-      border-radius: 99px; font-weight: 600; cursor: pointer; font-family: inherit;
+      border-radius: 99px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 12px;
     }
     .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
     .error-msg.show { display: block; }
+    .empty-plans { text-align: center; padding: 32px 16px; color: var(--text-muted); }
+    .empty-plans p { margin-bottom: 16px; font-size: 0.9rem; }
     .hidden { display: none !important; }
-    @media (max-width: 520px) { .plan-form { grid-template-columns: 1fr; } .grid { gap: 5px; } }
+    @media (max-width: 520px) { .plan-form { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -139,42 +150,58 @@
   </div>
 
   <div class="board">
-    <!-- Plan setup (shown when no plan) -->
-    <div id="planSetup" class="plan-setup hidden">
-      <h2>أنشئ خطتك</h2>
-      <p>حدد مبلغ التوفير والمدة بالأيام — سنبني لك خطة يومية تلقائياً</p>
-      <form id="planForm">
-        <div class="plan-form">
-          <div>
-            <label for="goalInput">المبلغ (KD)</label>
-            <input type="number" id="goalInput" min="10" max="50000" placeholder="500" required />
+    <!-- Plans list -->
+    <div id="plansListView">
+      <div class="view-header">
+        <h1>خططي</h1>
+        <button class="btn-pink" id="showCreateBtn">+ خطة جديدة</button>
+      </div>
+
+      <div id="createFormWrap" class="plan-setup hidden">
+        <h2>أنشئ خطة جديدة</h2>
+        <p>لا يوجد حد — أنشئ أي عدد من خطط التوفير</p>
+        <form id="planForm">
+          <div class="plan-form full">
+            <div>
+              <label for="nameInput">اسم الخطة (اختياري)</label>
+              <input type="text" id="nameInput" placeholder="مثال: سيارة جديدة" maxlength="50" />
+            </div>
           </div>
-          <div>
-            <label for="daysInput">عدد الأيام</label>
-            <input type="number" id="daysInput" min="1" max="365" placeholder="30" required />
+          <div class="plan-form">
+            <div>
+              <label for="goalInput">المبلغ (KD)</label>
+              <input type="number" id="goalInput" min="10" max="50000" placeholder="500" required />
+            </div>
+            <div>
+              <label for="daysInput">عدد الأيام</label>
+              <input type="number" id="daysInput" min="1" max="365" placeholder="30" required />
+            </div>
           </div>
-        </div>
-        <button type="submit" class="btn-create-plan">إنشاء الخطة ✨</button>
-        <div class="error-msg" id="planError"></div>
-      </form>
+          <button type="submit" class="btn-pink" style="width:100%;padding:14px">إنشاء الخطة ✨</button>
+          <div class="error-msg" id="planError"></div>
+        </form>
+      </div>
+
+      <div id="plansList" class="plans-list">
+        <div class="empty-plans"><p>Loading...</p></div>
+      </div>
     </div>
 
-    <!-- Savings board (shown when plan exists) -->
+    <!-- Single plan board -->
     <div id="boardView" class="hidden">
+      <button class="reset-btn" id="backBtn" style="margin-bottom:16px">← كل الخطط</button>
       <header class="header">
         <div>
           <div class="goal-number"><span id="goalDisplay">0</span><span class="goal-currency"> KD</span></div>
           <div class="goal-label">الهدف — Kuwaiti Dinar</div>
         </div>
-        <h1 class="title">حصالتي</h1>
+        <div class="plan-name" id="planName"></div>
       </header>
-
       <div class="plan-info">
         <span id="daysInfo">📅 0 days</span>
         <span id="dailyInfo">💰 ~0 KD/day</span>
-        <span id="cellsInfo">🎯 0 savings slots</span>
+        <span id="cellsInfo">🎯 0 slots</span>
       </div>
-
       <section class="progress-section">
         <div class="progress-stats">
           <span>موفر: <span class="saved" id="savedAmount">0 KD</span></span>
@@ -185,21 +212,19 @@
         </div>
         <div class="progress-remaining" id="remainingText"></div>
       </section>
-
       <div class="grid" id="grid"></div>
-
       <footer class="footer">
-        <button class="reset-btn" id="newPlanBtn">خطة جديدة</button>
         <button class="reset-btn" id="resetBtn">Reset progress</button>
+        <button class="reset-btn btn-delete-plan" id="deletePlanBtn">حذف الخطة</button>
       </footer>
     </div>
   </div>
 
   <div class="celebration" id="celebration">
     <div class="celebration-box">
-      <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+      <div style="font-size:3rem">🎉</div>
       <h2>مبروك!</h2>
-      <p id="celebrationText">You reached your goal!</p>
+      <p id="celebrationText">Goal reached!</p>
       <button id="closeCelebration">Continue</button>
     </div>
   </div>
@@ -207,7 +232,6 @@
   <script src="auth.js"></script>
   <script>
     const CURRENCY = "KD";
-    let currentUser = null;
     let plan = null;
     let saveTimer = null;
 
@@ -221,6 +245,73 @@
         if (plan.checked[cellKey(r, c)]) total += amt;
       }));
       return total;
+    }
+
+    function showPlansList() {
+      document.getElementById("plansListView").classList.remove("hidden");
+      document.getElementById("boardView").classList.add("hidden");
+      plan = null;
+      loadPlansList();
+    }
+
+    function showBoard(p) {
+      plan = p;
+      document.getElementById("plansListView").classList.add("hidden");
+      document.getElementById("boardView").classList.remove("hidden");
+      document.getElementById("goalDisplay").textContent = plan.goal;
+      document.getElementById("planName").textContent = plan.name || "حصالتي";
+      document.getElementById("daysInfo").textContent = `📅 ${plan.days} days`;
+      document.getElementById("dailyInfo").textContent = `💰 ~${plan.dailyTarget} KD/day`;
+      document.getElementById("cellsInfo").textContent = `🎯 ${plan.grid.flat().length} slots`;
+      buildGrid();
+      updateProgress();
+    }
+
+    async function loadPlansList() {
+      const container = document.getElementById("plansList");
+      try {
+        const res = await fetch("/api/plans");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        if (!data.plans.length) {
+          container.innerHTML = `
+            <div class="empty-plans">
+              <p>لا توجد خطط بعد — أنشئ خطتك الأولى!</p>
+              <button class="btn-pink" onclick="document.getElementById('showCreateBtn').click()">+ خطة جديدة</button>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = data.plans.map(p => `
+          <div class="plan-card" data-id="${p.id}">
+            <div class="plan-card-info">
+              <h3>${escapeHtml(p.name)}</h3>
+              <p>${p.goal} KD · ${p.days} days · ${new Date(p.created_at).toLocaleDateString()}</p>
+            </div>
+            <div class="plan-card-progress">
+              <div class="pct">${p.pct}%</div>
+              <div class="saved">${p.saved} KD</div>
+              <div class="mini-bar"><div class="mini-bar-fill" style="width:${p.pct}%"></div></div>
+            </div>
+          </div>`).join("");
+
+        container.querySelectorAll(".plan-card").forEach(card => {
+          card.addEventListener("click", () => openPlan(card.dataset.id));
+        });
+      } catch (err) {
+        container.innerHTML = `<div class="empty-plans"><p style="color:#ef4444">${err.message}</p></div>`;
+      }
+    }
+
+    async function openPlan(id) {
+      const res = await fetch(`/api/plans/${id}`);
+      const data = await res.json();
+      if (res.ok) showBoard(data.plan);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
 
     function updateProgress() {
@@ -249,9 +340,8 @@
 
       plan.grid.forEach((row, r) => row.forEach((amount, c) => {
         const key = cellKey(r, c);
-        const isChecked = !!plan.checked[key];
         const cell = document.createElement("button");
-        cell.className = "cell" + (isChecked ? " checked" : "");
+        cell.className = "cell" + (plan.checked[key] ? " checked" : "");
         cell.innerHTML = `<span class="amount">${amount}</span><span class="check">✓</span>`;
         cell.addEventListener("click", () => {
           plan.checked[key] = !plan.checked[key];
@@ -267,7 +357,7 @@
     function scheduleSave() {
       clearTimeout(saveTimer);
       saveTimer = setTimeout(async () => {
-        await fetch("/api/plan/check", {
+        await fetch(`/api/plans/${plan.id}/check`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ checked: plan.checked }),
@@ -275,67 +365,49 @@
       }, 400);
     }
 
-    function showBoard(p) {
-      plan = p;
-      document.getElementById("planSetup").classList.add("hidden");
-      document.getElementById("boardView").classList.remove("hidden");
-      document.getElementById("goalDisplay").textContent = plan.goal;
-      document.getElementById("daysInfo").textContent = `📅 ${plan.days} days`;
-      document.getElementById("dailyInfo").textContent = `💰 ~${plan.dailyTarget} KD/day`;
-      const totalCells = plan.grid.flat().length;
-      document.getElementById("cellsInfo").textContent = `🎯 ${totalCells} savings slots`;
-      buildGrid();
-      updateProgress();
-    }
-
-    function showSetup() {
-      document.getElementById("planSetup").classList.remove("hidden");
-      document.getElementById("boardView").classList.add("hidden");
-      plan = null;
-    }
-
-    async function loadPlan() {
-      const res = await fetch("/api/plan");
-      const data = await res.json();
-      if (data.plan) showBoard(data.plan);
-      else showSetup();
-    }
+    document.getElementById("showCreateBtn").addEventListener("click", () => {
+      document.getElementById("createFormWrap").classList.toggle("hidden");
+    });
 
     document.getElementById("planForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errEl = document.getElementById("planError");
       errEl.classList.remove("show");
 
-      const goal = document.getElementById("goalInput").value;
-      const days = document.getElementById("daysInput").value;
-
-      const res = await fetch("/api/plan", {
+      const res = await fetch("/api/plans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal, days }),
+        body: JSON.stringify({
+          goal: document.getElementById("goalInput").value,
+          days: document.getElementById("daysInput").value,
+          name: document.getElementById("nameInput").value,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
-        errEl.textContent = data.error || "Failed to create plan";
+        errEl.textContent = data.error || "Failed";
         errEl.classList.add("show");
         return;
       }
+      document.getElementById("planForm").reset();
+      document.getElementById("createFormWrap").classList.add("hidden");
       showBoard(data.plan);
     });
 
-    document.getElementById("newPlanBtn").addEventListener("click", async () => {
-      if (!confirm("Create a new plan? Your current progress will be lost.")) return;
-      await fetch("/api/plan", { method: "DELETE" });
-      showSetup();
-    });
-
+    document.getElementById("backBtn").addEventListener("click", showPlansList);
     document.getElementById("resetBtn").addEventListener("click", () => {
-      if (!confirm("Reset checked amounts?")) return;
+      if (!confirm("Reset progress on this plan?")) return;
       plan.checked = {};
       scheduleSave();
       buildGrid();
       updateProgress();
       document.getElementById("celebration").classList.remove("show");
+    });
+
+    document.getElementById("deletePlanBtn").addEventListener("click", async () => {
+      if (!confirm("Delete this plan permanently?")) return;
+      await fetch(`/api/plans/${plan.id}`, { method: "DELETE" });
+      showPlansList();
     });
 
     document.getElementById("closeCelebration").addEventListener("click", () => {
@@ -346,10 +418,9 @@
 
     requireAuth().then(user => {
       if (!user) return;
-      currentUser = user;
       document.getElementById("userLabel").textContent = user.username;
       if (user.role === "admin") document.getElementById("adminLink").style.display = "inline";
-      loadPlan();
+      showPlansList();
     });
   </script>
 </body>

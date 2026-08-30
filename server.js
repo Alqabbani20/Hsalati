@@ -9,9 +9,11 @@ const {
   getAllUsers,
   createUser,
   deleteUser,
-  getUserPlan,
-  saveUserPlan,
-  deleteUserPlan,
+  getUserPlans,
+  getUserPlanById,
+  addUserPlan,
+  updateUserPlan,
+  deleteUserPlanById,
 } = require("./lib/db");
 const { generatePlan } = require("./lib/generatePlan");
 const {
@@ -124,11 +126,32 @@ app.delete("/api/users/:id", authMiddleware, adminMiddleware, async (req, res) =
   }
 });
 
-// ── Savings plan API ──
+// ── Savings plans API (unlimited per user) ──
 
-app.get("/api/plan", authMiddleware, async (req, res) => {
+function planProgress(plan) {
+  let saved = 0;
+  plan.grid.forEach((row, r) => row.forEach((amt, c) => {
+    if (plan.checked[`${r}-${c}`]) saved += amt;
+  }));
+  const pct = plan.goal ? Math.min(100, Math.round((saved / plan.goal) * 100)) : 0;
+  return { saved, pct };
+}
+
+app.get("/api/plans", authMiddleware, async (req, res) => {
   try {
-    const plan = await getUserPlan(req.user.id);
+    const plans = await getUserPlans(req.user.id);
+    const summary = plans.map((p) => ({ ...planProgress(p), id: p.id, name: p.name, goal: p.goal, days: p.days, created_at: p.created_at }));
+    res.json({ plans: summary });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load plans" });
+  }
+});
+
+app.get("/api/plans/:id", authMiddleware, async (req, res) => {
+  try {
+    const plan = await getUserPlanById(req.user.id, req.params.id);
+    if (!plan) return res.status(404).json({ error: "Plan not found" });
     res.json({ plan });
   } catch (err) {
     console.error(err);
@@ -136,9 +159,9 @@ app.get("/api/plan", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/api/plan", authMiddleware, async (req, res) => {
+app.post("/api/plans", authMiddleware, async (req, res) => {
   try {
-    const { goal, days } = req.body;
+    const { goal, days, name } = req.body;
     const goalNum = Math.round(Number(goal));
     const daysNum = Math.round(Number(days));
 
@@ -149,8 +172,8 @@ app.post("/api/plan", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "Days must be between 1 and 365" });
     }
 
-    const plan = generatePlan(goalNum, daysNum);
-    await saveUserPlan(req.user.id, plan);
+    const plan = generatePlan(goalNum, daysNum, name?.trim());
+    await addUserPlan(req.user.id, plan);
     res.status(201).json({ plan });
   } catch (err) {
     console.error(err);
@@ -158,27 +181,40 @@ app.post("/api/plan", authMiddleware, async (req, res) => {
   }
 });
 
-app.put("/api/plan/check", authMiddleware, async (req, res) => {
+app.put("/api/plans/:id/check", authMiddleware, async (req, res) => {
   try {
-    const plan = await getUserPlan(req.user.id);
-    if (!plan) return res.status(404).json({ error: "No plan found" });
+    const plan = await getUserPlanById(req.user.id, req.params.id);
+    if (!plan) return res.status(404).json({ error: "Plan not found" });
 
-    plan.checked = req.body.checked || {};
-    await saveUserPlan(req.user.id, plan);
-    res.json({ plan });
+    const updated = await updateUserPlan(req.user.id, req.params.id, {
+      checked: req.body.checked || {},
+    });
+    res.json({ plan: updated });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to save progress" });
   }
 });
 
-app.delete("/api/plan", authMiddleware, async (req, res) => {
+app.delete("/api/plans/:id", authMiddleware, async (req, res) => {
   try {
-    await deleteUserPlan(req.user.id);
+    const plan = await getUserPlanById(req.user.id, req.params.id);
+    if (!plan) return res.status(404).json({ error: "Plan not found" });
+    await deleteUserPlanById(req.user.id, req.params.id);
     res.json({ ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete plan" });
+  }
+});
+
+// Legacy single-plan routes (redirect to first plan)
+app.get("/api/plan", authMiddleware, async (req, res) => {
+  try {
+    const plans = await getUserPlans(req.user.id);
+    res.json({ plan: plans[0] || null, plans: plans.length });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load plan" });
   }
 });
 
