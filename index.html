@@ -358,7 +358,19 @@
       height: 100%;
       background: var(--pink);
       border-radius: 99px;
+      transition: width 0.5s ease;
     }
+
+    .phone-empty {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 8px 4px;
+      line-height: 1.4;
+    }
+
+    .phone.live { cursor: pointer; }
+    .phone.live:hover { transform: scale(1.02); transition: transform 0.15s; }
 
     .mascot-3d {
       position: absolute;
@@ -880,33 +892,24 @@
       <div class="coin c3">KD</div>
       <div class="plant">🪴</div>
 
-      <div class="phone">
+      <div class="phone" id="phoneMockup">
         <div class="phone-notch"></div>
         <div class="phone-screen">
-          <div class="phone-greeting" data-i18n="phoneHello">Hello, Fares 👋</div>
+          <div class="phone-greeting" id="phoneGreeting">مرحباً 👋</div>
           <div class="phone-name" data-i18n="phoneSavings">Your Savings</div>
           <div class="savings-card">
             <label data-i18n="phoneTotal">Total Savings</label>
             <div class="amount" id="phoneBalance">0 KD</div>
-            <div class="mini-chart">
-              <span style="height:40%"></span><span style="height:55%"></span>
-              <span style="height:35%"></span><span style="height:70%"></span>
-              <span style="height:50%"></span><span style="height:85%"></span>
-              <span style="height:60%"></span><span style="height:90%"></span>
+            <div class="mini-chart" id="phoneMiniChart">
+              <span style="height:8%"></span><span style="height:8%"></span>
+              <span style="height:8%"></span><span style="height:8%"></span>
+              <span style="height:8%"></span><span style="height:8%"></span>
+              <span style="height:8%"></span><span style="height:8%"></span>
             </div>
           </div>
           <div class="goals-title" data-i18n="phoneGoals">Your Goals</div>
-          <div class="goal-item">
-            <div class="goal-item-header"><span>حصالتي</span><span id="phonePct">0%</span></div>
-            <div class="goal-bar"><div class="goal-bar-fill" id="phoneBar" style="width:0%"></div></div>
-          </div>
-          <div class="goal-item">
-            <div class="goal-item-header"><span>Emergency Fund</span><span>45%</span></div>
-            <div class="goal-bar"><div class="goal-bar-fill" style="width:45%"></div></div>
-          </div>
-          <div class="goal-item">
-            <div class="goal-item-header"><span>Dream Vacation</span><span>20%</span></div>
-            <div class="goal-bar"><div class="goal-bar-fill" style="width:20%"></div></div>
+          <div id="phoneGoalsList">
+            <div class="phone-empty" data-i18n="phoneSignIn">Sign in to see your savings</div>
           </div>
         </div>
       </div>
@@ -1065,6 +1068,7 @@
         document.getElementById("navAdminLink").style.display =
           user.role === "admin" ? "inline-flex" : "none";
         document.getElementById("navChallengeLink").href = "challenge.html";
+        document.getElementById("phoneMockup").classList.add("live");
       } else {
         document.getElementById("navGuest").classList.remove("hidden");
         document.getElementById("navUser").classList.remove("show");
@@ -1073,8 +1077,76 @@
           e.preventDefault();
           openLogin();
         };
+        document.getElementById("phoneMockup").classList.remove("live");
+      }
+      loadPhoneData(user);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function renderMiniChart(plans) {
+      const chart = document.getElementById("phoneMiniChart");
+      const values = plans.length
+        ? plans.slice(0, 8).map((p) => Math.max(8, p.pct))
+        : [8, 8, 8, 8, 8, 8, 8, 8];
+      while (values.length < 8) values.push(8);
+      chart.innerHTML = values.slice(0, 8).map((h) => `<span style="height:${h}%"></span>`).join("");
+    }
+
+    function renderPhoneGoals(plans, isGuest) {
+      const container = document.getElementById("phoneGoalsList");
+      if (isGuest) {
+        container.innerHTML = `<div class="phone-empty">${t("phoneSignIn")}</div>`;
+        return;
+      }
+      if (!plans.length) {
+        container.innerHTML = `<div class="phone-empty">${t("phoneNoPlans")}</div>`;
+        return;
+      }
+      container.innerHTML = plans.slice(0, 3).map((p) => `
+        <div class="goal-item">
+          <div class="goal-item-header">
+            <span>${escapeHtml(p.name)}</span><span>${p.pct}%</span>
+          </div>
+          <div class="goal-bar"><div class="goal-bar-fill" style="width:${p.pct}%"></div></div>
+        </div>`).join("");
+    }
+
+    async function loadPhoneData(user) {
+      const greetingEl = document.getElementById("phoneGreeting");
+      const balanceEl = document.getElementById("phoneBalance");
+
+      if (!user) {
+        greetingEl.textContent = t("phoneHelloGuest");
+        balanceEl.textContent = "0 KD";
+        renderMiniChart([]);
+        renderPhoneGoals([], true);
+        return;
+      }
+
+      greetingEl.textContent =
+        (getLang() === "ar" ? "مرحباً، " : "Hello, ") + user.username + " 👋";
+
+      try {
+        const data = await apiFetch("/api/plans");
+        const plans = data.plans || [];
+        const totalSaved = plans.reduce((sum, p) => sum + (p.saved || 0), 0);
+        balanceEl.textContent = totalSaved + " KD";
+        renderMiniChart(plans);
+        renderPhoneGoals(plans, false);
+      } catch {
+        balanceEl.textContent = "0 KD";
+        renderMiniChart([]);
+        renderPhoneGoals([], false);
       }
     }
+
+    document.getElementById("phoneMockup").addEventListener("click", () => {
+      if (currentUser) window.location.href = "challenge.html";
+      else openLogin();
+    });
 
     function goToApp() {
       if (!currentUser) { openLogin(); return; }
@@ -1109,6 +1181,7 @@
         });
         closeLogin();
         updateNav(data.user);
+        loadPhoneData(data.user);
         window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
       } catch (err) {
         loginError.textContent = err.message || t("loginFailed");
@@ -1118,28 +1191,7 @@
     });
 
     getCurrentUser().then(updateNav);
-
-    (function syncPhoneMockup() {
-      const GOAL = 1500;
-      const STORAGE_KEY = "piggy-bank-kd-v1";
-      const GRID = [
-        [1,18,12,5,9,17,12,7,16,14,5],[1,20,12,6,7,17,14,7,12,9,5],[1,1,2,7,4,16,11,8,7,6,4],
-        [2,19,11,6,7,15,12,8,6,9,5],[4,20,11,7,8,14,13,9,7,11,6],[5,21,11,8,9,13,14,11,8,12,7],
-        [6,21,11,9,11,12,15,12,9,13,8],[7,22,11,11,12,11,16,13,11,14,9],[8,20,11,12,13,9,17,14,12,15,11],
-        [9,20,11,13,14,8,19,15,13,16,12],[11,20,11,14,15,7,20,16,14,17,13],[12,18,11,15,16,6,21,17,15,19,14]
-      ];
-      try {
-        const checked = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        let saved = 0;
-        GRID.forEach((row, r) => row.forEach((amt, c) => {
-          if (checked[`${r}-${c}`]) saved += amt;
-        }));
-        const pct = Math.min(100, Math.round((saved / GOAL) * 100));
-        document.getElementById("phoneBalance").textContent = saved + " KD";
-        document.getElementById("phonePct").textContent = pct + "%";
-        document.getElementById("phoneBar").style.width = pct + "%";
-      } catch (_) {}
-    })();
+    document.addEventListener("langchange", () => loadPhoneData(currentUser));
   </script>
 </body>
 </html>

@@ -105,9 +105,12 @@ const I18N = {
     footerMade: "صُنع بـ 💗 في الكويت",
     loginModalSub: "تسجيل الدخول إلى حسابك",
     phoneHello: "مرحباً، Fares 👋",
+    phoneHelloGuest: "مرحباً 👋",
     phoneSavings: "مدخراتك",
     phoneTotal: "إجمالي المدخرات",
     phoneGoals: "أهدافك",
+    phoneNoPlans: "لا توجد خطط بعد",
+    phoneSignIn: "سجّل دخولك لعرض مدخراتك",
   },
   en: {
     appName: "Hsalati",
@@ -210,9 +213,12 @@ const I18N = {
     footerMade: "Made with 💗 in Kuwait",
     loginModalSub: "Sign in to your account",
     phoneHello: "Hello, Fares 👋",
+    phoneHelloGuest: "Hello 👋",
     phoneSavings: "Your Savings",
     phoneTotal: "Total Savings",
     phoneGoals: "Your Goals",
+    phoneNoPlans: "No plans yet",
+    phoneSignIn: "Sign in to see your savings",
   },
 };
 
