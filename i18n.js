@@ -166,6 +166,11 @@ const I18N = {
     passwordUpdated: "تم تحديث كلمة المرور",
     forgotPassword: "نسيت كلمة المرور؟",
     resetRequested: "تم إرسال الطلب — تواصل مع المدير",
+    dbSetupTitle: "🗄️ إعداد قاعدة البيانات",
+    dbSetupSteps: "1. افتح Supabase → SQL Editor → New query\n2. انسخ الكود أدناه → Run\n3. ارجع هنا واضغط تحقق من الاتصال",
+    openSupabase: "فتح Supabase Dashboard",
+    copySchema: "نسخ SQL",
+    recheckDb: "تحقق من الاتصال",
   },
   en: {
     appName: "Hsalati",
@@ -329,6 +334,11 @@ const I18N = {
     passwordUpdated: "Password updated",
     forgotPassword: "Forgot password?",
     resetRequested: "Request sent — contact admin",
+    dbSetupTitle: "🗄️ Database setup",
+    dbSetupSteps: "1. Open Supabase → SQL Editor → New query\n2. Copy the code below → Run\n3. Come back and click Check connection",
+    openSupabase: "Open Supabase Dashboard",
+    copySchema: "Copy SQL",
+    recheckDb: "Check connection",
   },
 };
 

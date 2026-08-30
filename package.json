@@ -7,10 +7,11 @@
     "start": "node server.js",
     "dev": "node server.js",
     "restart": "node scripts/restart.js",
-    "migrate:supabase": "node scripts/migrate-to-supabase.js"
+    "migrate:supabase": "node scripts/migrate-to-supabase.js",
+    "setup:schema": "node scripts/apply-schema.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,7 +21,11 @@
     "jsonwebtoken": "^9.0.2",
     "@vercel/blob": "^0.27.0",
     "@upstash/redis": "^1.34.3",
-    "@supabase/supabase-js": "^2.49.1",
-    "express-rate-limit": "^7.5.0"
+    "@supabase/supabase-js": "^2.55.0",
+    "express-rate-limit": "^7.5.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "pg": "^8.13.1"
   }
 }

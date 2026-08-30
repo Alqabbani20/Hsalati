@@ -257,8 +257,18 @@
       </div>
     </div>
 
+    <div id="schemaSetup" class="card" style="display:none">
+      <h2 data-i18n="dbSetupTitle">🗄️ إعداد قاعدة البيانات</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;line-height:1.5" data-i18n="dbSetupSteps">1. افتح Supabase → SQL Editor → New query<br>2. انسخ الكود أدناه → Run<br>3. ارجع هنا واضغط "تحقق من الاتصال"</p>
+      <a href="https://supabase.com/dashboard" target="_blank" rel="noopener" class="btn-create" style="display:inline-block;text-decoration:none;margin-bottom:12px" data-i18n="openSupabase">فتح Supabase Dashboard</a>
+      <textarea id="schemaSql" rows="12" readonly style="width:100%;padding:10px;border:2px solid var(--pink-light);border-radius:10px;font-family:monospace;font-size:0.72rem;margin-bottom:10px"></textarea>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" class="btn-create" id="copySchemaBtn" data-i18n="copySchema">نسخ SQL</button>
+        <button type="button" class="btn-outline" id="recheckDbBtn" data-i18n="recheckDb">تحقق من الاتصال</button>
+      </div>
+    </div>
+
     <div class="card">
-      <h2 data-i18n="createUser">➕ إنشاء مستخدم جديد</h2>
       <form id="createForm">
         <div class="form-row">
           <div class="form-group">
@@ -333,8 +343,30 @@
         } else {
           banner.style.display = "none";
         }
+        const schemaCard = document.getElementById("schemaSetup");
+        if (!data.ok && data.storage === "supabase") {
+          schemaCard.style.display = "block";
+          loadSchemaSql();
+        } else {
+          schemaCard.style.display = "none";
+        }
       } catch { /* ignore */ }
     }
+
+    async function loadSchemaSql() {
+      try {
+        const data = await apiFetch("/api/schema");
+        document.getElementById("schemaSql").value = data.sql || "";
+      } catch { /* ignore */ }
+    }
+
+    document.getElementById("copySchemaBtn").addEventListener("click", () => {
+      const ta = document.getElementById("schemaSql");
+      ta.select();
+      navigator.clipboard.writeText(ta.value);
+    });
+
+    document.getElementById("recheckDbBtn").addEventListener("click", checkStorage);
 
     async function loadUsers() {
       const container = document.getElementById("usersTable");

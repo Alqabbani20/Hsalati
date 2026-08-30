@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const {
@@ -66,6 +67,11 @@ app.get("/api/health", async (_req, res) => {
   }
 
   res.status(result.ok ? 200 : 503).json(result);
+});
+
+app.get("/api/schema", authMiddleware, adminMiddleware, (_req, res) => {
+  const schemaPath = path.join(__dirname, "supabase", "schema.sql");
+  res.json({ sql: fs.readFileSync(schemaPath, "utf8") });
 });
 
 app.post("/api/login", loginLimiter, async (req, res) => {
