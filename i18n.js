@@ -63,6 +63,8 @@ const I18N = {
     you: "أنت",
     userCreated: "تم إنشاء المستخدم بنجاح!",
     deleteUserConfirm: "حذف المستخدم",
+    storageWarningTitle: "⚠️ التخزين غير دائم",
+    storageWarningBody: "المستخدمون والخطط تُحذف عند إعادة تشغيل الخادم. اذهب إلى Vercel → Storage → Connect Blob (أو Upstash Redis) ثم أعد النشر.",
 
     // Landing
     navFeatures: "المميزات",
@@ -172,6 +174,8 @@ const I18N = {
     you: "You",
     userCreated: "User created successfully!",
     deleteUserConfirm: "Delete user",
+    storageWarningTitle: "⚠️ Storage is not persistent",
+    storageWarningBody: "Users and plans are lost when the server restarts. Go to Vercel → Storage → Connect Blob (or Upstash Redis), then redeploy.",
 
     navFeatures: "Features",
     navHow: "How It Works",

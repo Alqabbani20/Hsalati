@@ -220,11 +220,25 @@
       padding: 24px;
       font-size: 0.9rem;
     }
+
+    .storage-banner {
+      background: #fffbeb;
+      border: 2px solid #fde68a;
+      color: #92400e;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .storage-banner strong { display: block; margin-bottom: 4px; }
   </style>
 </head>
 <body>
 
   <div class="container">
+    <div id="storageBanner" class="storage-banner" style="display:none"></div>
     <div class="top-bar">
       <div>
         <h1 data-i18n="adminPanel">لوحة الإدارة</h1>
@@ -280,7 +294,22 @@
       currentUser = await requireAdmin();
       if (!currentUser) return;
       document.getElementById("adminName").textContent = currentUser.username;
+      checkStorage();
       loadUsers();
+    }
+
+    async function checkStorage() {
+      try {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        const banner = document.getElementById("storageBanner");
+        if (!data.persistent) {
+          banner.style.display = "block";
+          banner.innerHTML = `<strong>${t("storageWarningTitle")}</strong>${t("storageWarningBody")}`;
+        } else {
+          banner.style.display = "none";
+        }
+      } catch { /* ignore */ }
     }
 
     async function loadUsers() {
@@ -378,7 +407,7 @@
     }
 
     document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.addEventListener("langchange", loadUsers);
+    document.addEventListener("langchange", () => { checkStorage(); loadUsers(); });
 
     init();
   </script>

@@ -14,6 +14,8 @@ const {
   addUserPlan,
   updateUserPlan,
   deleteUserPlanById,
+  storageMode,
+  isPersistentStorage,
 } = require("./lib/db");
 const { generatePlan } = require("./lib/generatePlan");
 const {
@@ -34,13 +36,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/api/health", (_req, res) => {
-  const storage = process.env.BLOB_READ_WRITE_TOKEN ? "blob" : "file";
+  const storage = storageMode();
   res.json({
     ok: true,
     admin: !!process.env.ADMIN_PASSWORD,
     storage,
-    warning: process.env.VERCEL && storage !== "blob"
-      ? "Connect Vercel Blob (Storage) for persistent users and plans"
+    persistent: isPersistentStorage(),
+    warning: storage === "ephemeral"
+      ? "Connect Vercel Blob (Storage tab) or Upstash Redis for persistent users and plans"
       : undefined,
   });
 });
