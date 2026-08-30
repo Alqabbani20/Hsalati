@@ -18,6 +18,10 @@ const {
   isPersistentStorage,
 } = require("./lib/db");
 const { useSupabase } = require("./lib/supabase");
+const { generatePlan } = require("./lib/generatePlan");
+const { planSavedTotal } = require("./lib/analytics");
+const { registerApiRoutes } = require("./lib/apiRoutes");
+const { loginLimiter, apiLimiter, adminLimiter } = require("./lib/rateLimit");
 const {
   COOKIE_NAME,
   COOKIE_OPTIONS,
@@ -34,6 +38,7 @@ const root = __dirname;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use("/api", apiLimiter);
 
 app.get("/api/health", async (_req, res) => {
   const storage = storageMode();
@@ -62,7 +67,7 @@ app.get("/api/health", async (_req, res) => {
   res.status(result.ok ? 200 : 503).json(result);
 });
 
-app.post("/api/login", async (req, res) => {
+app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -72,6 +77,9 @@ app.post("/api/login", async (req, res) => {
     const user = await findUserByUsername(username.trim());
     if (!user || !bcrypt.compareSync(password, user.password_hash)) {
       return res.status(401).json({ error: "Invalid username or password" });
+    }
+    if (user.disabled_at) {
+      return res.status(403).json({ error: "Account disabled. Contact admin." });
     }
 
     const token = signToken(user);
@@ -95,7 +103,7 @@ app.get("/api/me", authMiddleware, (req, res) => {
   res.json({ user: req.user });
 });
 
-app.get("/api/users", authMiddleware, adminMiddleware, async (_req, res) => {
+app.get("/api/users", authMiddleware, adminMiddleware, adminLimiter, async (_req, res) => {
   try {
     res.json({ users: await getAllUsers() });
   } catch (err) {
@@ -104,7 +112,7 @@ app.get("/api/users", authMiddleware, adminMiddleware, async (_req, res) => {
   }
 });
 
-app.post("/api/users", authMiddleware, adminMiddleware, async (req, res) => {
+app.post("/api/users", authMiddleware, adminMiddleware, adminLimiter, async (req, res) => {
   try {
     const { username, password, role = "user" } = req.body;
 
@@ -135,7 +143,7 @@ app.post("/api/users", authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-app.delete("/api/users/:id", authMiddleware, adminMiddleware, async (req, res) => {
+app.delete("/api/users/:id", authMiddleware, adminMiddleware, adminLimiter, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
@@ -154,14 +162,8 @@ app.delete("/api/users/:id", authMiddleware, adminMiddleware, async (req, res) =
   }
 });
 
-// ── Savings plans API (unlimited per user) ──
-
 function planProgress(plan) {
-  let saved = 0;
-  const checked = plan.checked || {};
-  plan.grid.forEach((row, r) => row.forEach((amt, c) => {
-    if (checked[`${r}-${c}`]) saved += amt;
-  }));
+  const saved = planSavedTotal(plan);
   const pct = plan.goal ? Math.min(100, Math.round((saved / plan.goal) * 100)) : 0;
   return { saved, pct };
 }
@@ -169,7 +171,9 @@ function planProgress(plan) {
 app.get("/api/plans", authMiddleware, async (req, res) => {
   try {
     const plans = await getUserPlans(req.user.id);
-    const summary = plans.map((p) => ({ ...planProgress(p), id: p.id, name: p.name, goal: p.goal, days: p.days, created_at: p.created_at }));
+    const summary = plans.map((p) => ({
+      ...planProgress(p), id: p.id, name: p.name, goal: p.goal, days: p.days, created_at: p.created_at,
+    }));
     res.json({ plans: summary });
   } catch (err) {
     console.error(err);
@@ -188,43 +192,6 @@ app.get("/api/plans/:id", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/api/plans", authMiddleware, async (req, res) => {
-  try {
-    const { goal, days, name } = req.body;
-    const goalNum = Math.round(Number(goal));
-    const daysNum = Math.round(Number(days));
-
-    if (!goalNum || goalNum < 10 || goalNum > 50000) {
-      return res.status(400).json({ error: "Goal must be between 10 and 50,000 KD" });
-    }
-    if (!daysNum || daysNum < 1 || daysNum > 365) {
-      return res.status(400).json({ error: "Days must be between 1 and 365" });
-    }
-
-    const plan = generatePlan(goalNum, daysNum, name?.trim());
-    await addUserPlan(req.user.id, plan);
-    res.status(201).json({ plan });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to create plan" });
-  }
-});
-
-app.put("/api/plans/:id/check", authMiddleware, async (req, res) => {
-  try {
-    const plan = await getUserPlanById(req.user.id, req.params.id);
-    if (!plan) return res.status(404).json({ error: "Plan not found" });
-
-    const updated = await updateUserPlan(req.user.id, req.params.id, {
-      checked: req.body.checked || {},
-    });
-    res.json({ plan: updated });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to save progress" });
-  }
-});
-
 app.delete("/api/plans/:id", authMiddleware, async (req, res) => {
   try {
     const plan = await getUserPlanById(req.user.id, req.params.id);
@@ -237,7 +204,26 @@ app.delete("/api/plans/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Legacy single-plan routes (redirect to first plan)
+registerApiRoutes(app, {
+  authMiddleware,
+  adminMiddleware,
+  generatePlan,
+  findUserByUsername,
+  findUserById,
+  getAllUsers,
+  createUser,
+  deleteUser,
+  getUserPlans,
+  getUserPlanById,
+  addUserPlan,
+  updateUserPlan,
+  deleteUserPlanById,
+  bcrypt,
+  signToken,
+  COOKIE_NAME,
+  COOKIE_OPTIONS,
+});
+
 app.get("/api/plan", authMiddleware, async (req, res) => {
   try {
     const plans = await getUserPlans(req.user.id);
@@ -247,13 +233,14 @@ app.get("/api/plan", authMiddleware, async (req, res) => {
   }
 });
 
-// ── Protected pages ──
-
-app.get("/challenge.html", (req, res, next) => {
+function requireAuthPage(req, res, next) {
   const token = req.cookies[COOKIE_NAME];
   if (!token) return res.redirect("/login.html");
   next();
-});
+}
+
+app.get("/challenge.html", requireAuthPage);
+app.get("/dashboard.html", requireAuthPage);
 
 app.get("/admin.html", (req, res, next) => {
   const token = req.cookies[COOKIE_NAME];
@@ -265,7 +252,6 @@ app.get("/admin.html", (req, res, next) => {
   next();
 });
 
-// Block sensitive dirs/files from static serving — do NOT block /api/* routes (handled above)
 const BLOCKED_PATHS = /^\/(data|lib|node_modules)(\/|$)|^\/api\/index\.js$|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
 
 app.use("/api", (req, res) => {

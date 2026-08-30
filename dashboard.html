@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f472b6" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>حصالتي — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <script src="i18n.js"></script>
+  <script src="theme.js"></script>
+  <style>
+    :root { --pink: #f472b6; --pink-dark: #ec4899; --pink-light: #fce7f3; --pink-soft: #fdf2f8; --text: #1e293b; --text-muted: #64748b; --white: #fff; --green: #22c55e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; font-family: Inter, sans-serif; background: linear-gradient(160deg, var(--pink-soft), var(--pink-light)); color: var(--text); padding: 24px 16px 40px; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .top h1 { font-family: Amiri, serif; font-size: 1.8rem; color: var(--pink-dark); }
+    .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .top-actions a, .top-actions button { font-size: 0.78rem; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--pink-light); background: var(--white); color: var(--pink-dark); text-decoration: none; cursor: pointer; font-family: inherit; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--white); border-radius: 18px; padding: 20px; border: 2px solid var(--pink-light); box-shadow: 0 12px 40px rgba(244,114,182,.12); }
+    .card h2 { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .card .val { font-size: 1.6rem; font-weight: 800; color: var(--pink-dark); }
+    .card .sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .streak-banner { background: linear-gradient(90deg, #fef3c7, #fde68a); border: 2px solid #fcd34d; border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .streak-banner .fire { font-size: 2rem; }
+    .section-title { font-family: Amiri, serif; font-size: 1.2rem; color: var(--pink-dark); margin: 24px 0 12px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 10px; }
+    .badge { background: var(--pink-soft); border: 1px solid var(--pink-light); border-radius: 12px; padding: 10px 14px; font-size: 0.82rem; display: flex; align-items: center; gap: 8px; }
+    .chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 12px; }
+    .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar { width: 100%; background: var(--green); border-radius: 6px 6px 0 0; min-height: 4px; transition: height .3s; }
+    .bar-label { font-size: 0.65rem; color: var(--text-muted); }
+    .plan-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--pink-soft); }
+    .plan-row:last-child { border: none; }
+    .mini-bar { height: 5px; background: var(--pink-light); border-radius: 99px; margin-top: 6px; overflow: hidden; }
+    .mini-fill { height: 100%; background: var(--green); border-radius: 99px; }
+    .empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1 data-i18n="dashboard">لوحة التحكم</h1>
+      <div class="top-actions">
+        <a href="challenge.html" data-i18n="myPlans">خططي</a>
+        <a href="index.html" data-i18n="home">الرئيسية</a>
+        <button type="button" class="lang-toggle">EN</button>
+        <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
+        <button id="logoutBtn" data-i18n="logout">خروج</button>
+      </div>
+    </div>
+
+    <div id="streakBanner" class="streak-banner hidden">
+      <span class="fire">🔥</span>
+      <div>
+        <strong id="streakText">0</strong>
+        <div class="sub" id="streakSub"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><h2 data-i18n="totalSaved">إجمالي المدخرات</h2><div class="val" id="totalSaved">0 KD</div></div>
+      <div class="card"><h2 data-i18n="activePlans">الخطط النشطة</h2><div class="val" id="planCount">0</div></div>
+      <div class="card"><h2 data-i18n="dailyAvg">متوسط يومي (30 يوم)</h2><div class="val" id="dailyAvg">0 KD</div></div>
+      <div class="card"><h2 data-i18n="projection">توقع الإنجاز</h2><div class="val" id="projection">—</div><div class="sub" id="projectionSub"></div></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="monthlyTrend">الاتجاه الشهري</h2>
+      <div class="chart" id="chart"></div>
+    </div>
+
+    <h2 class="section-title" data-i18n="badgesTitle">الشارات</h2>
+    <div class="badges" id="badges"><div class="empty" data-i18n="loading">جاري التحميل...</div></div>
+
+    <h2 class="section-title" data-i18n="plansProgress">تقدم الخطط</h2>
+    <div class="card" id="plansList"><div class="empty" data-i18n="loading">جاري التحميل...</div></div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="onboarding.js"></script>
+  <script>
+    async function loadDashboard() {
+      try {
+        const data = await apiFetch(`/api/dashboard?lang=${getLang()}`);
+        const ins = data.insights;
+
+        document.getElementById("totalSaved").textContent = `${ins.totalSaved} KD`;
+        document.getElementById("planCount").textContent = ins.planCount;
+        document.getElementById("dailyAvg").textContent = `${ins.dailyAvg} KD`;
+
+        const projEl = document.getElementById("projection");
+        const projSub = document.getElementById("projectionSub");
+        if (ins.projectionDays) {
+          projEl.textContent = `${ins.projectionDays} ${t("daysLabel")}`;
+          if (ins.speedupDays) projSub.textContent = t("speedupHint").replace("{n}", ins.speedupDays);
+        } else {
+          projEl.textContent = "—";
+          projSub.textContent = t("noProjection");
+        }
+
+        const streakBanner = document.getElementById("streakBanner");
+        if (data.streak > 0) {
+          streakBanner.classList.remove("hidden");
+          document.getElementById("streakText").textContent = t("streakDays").replace("{n}", data.streak);
+          document.getElementById("streakSub").textContent = data.lastSaveDaysAgo === 0
+            ? t("savedToday") : t("lastSaveDays").replace("{n}", data.lastSaveDaysAgo);
+        } else {
+          streakBanner.classList.add("hidden");
+        }
+
+        const chart = document.getElementById("chart");
+        if (ins.monthlyTrend?.length) {
+          const max = Math.max(...ins.monthlyTrend.map((m) => m.amount), 1);
+          chart.innerHTML = ins.monthlyTrend.map((m) => `
+            <div class="bar-wrap">
+              <div class="bar" style="height:${Math.round((m.amount / max) * 100)}%"></div>
+              <span class="bar-label">${m.month.slice(5)}</span>
+            </div>`).join("");
+        } else {
+          chart.innerHTML = `<div class="empty">${t("noDataYet")}</div>`;
+        }
+
+        const badgesEl = document.getElementById("badges");
+        if (data.badges?.length) {
+          badgesEl.innerHTML = data.badges.map((b) =>
+            `<div class="badge"><span>${b.icon}</span><span>${b.name}</span></div>`).join("");
+        } else {
+          badgesEl.innerHTML = `<div class="empty">${t("noBadgesYet")}</div>`;
+        }
+
+        const plansEl = document.getElementById("plansList");
+        if (data.plans?.length) {
+          plansEl.innerHTML = data.plans.map((p) => `
+            <div class="plan-row">
+              <div>
+                <strong>${escapeHtml(p.name)}</strong>
+                <div class="sub">${p.saved} / ${p.goal} KD</div>
+                <div class="mini-bar"><div class="mini-fill" style="width:${p.pct}%"></div></div>
+              </div>
+              <strong style="color:var(--green)">${p.pct}%</strong>
+            </div>`).join("");
+        } else {
+          plansEl.innerHTML = `<div class="empty">${t("noPlansYet")}</div>`;
+        }
+      } catch (err) {
+        document.getElementById("plansList").innerHTML = `<div class="empty" style="color:#ef4444">${err.message}</div>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.addEventListener("langchange", loadDashboard);
+
+    requireAuth().then((user) => {
+      if (!user) return;
+      initOnboarding();
+      loadDashboard();
+    });
+  </script>
+</body>
+</html>
