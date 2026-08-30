@@ -49,6 +49,10 @@ app.get("/api/health", async (_req, res) => {
     admin: !!process.env.ADMIN_PASSWORD,
     storage,
     persistent: isPersistentStorage(),
+    supabaseConfigured: useSupabase(),
+    supabaseHost: process.env.SUPABASE_URL
+      ? new URL(process.env.SUPABASE_URL).hostname
+      : undefined,
     warning: storage === "ephemeral"
       ? "Add Supabase env vars for persistent storage"
       : undefined,
