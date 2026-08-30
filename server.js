@@ -34,7 +34,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, admin: !!process.env.ADMIN_PASSWORD, storage: process.env.BLOB_READ_WRITE_TOKEN ? "blob" : "file" });
+  const storage = process.env.BLOB_READ_WRITE_TOKEN ? "blob" : "file";
+  res.json({
+    ok: true,
+    admin: !!process.env.ADMIN_PASSWORD,
+    storage,
+    warning: process.env.VERCEL && storage !== "blob"
+      ? "Connect Vercel Blob (Storage) for persistent users and plans"
+      : undefined,
+  });
 });
 
 app.post("/api/login", async (req, res) => {
@@ -130,8 +138,9 @@ app.delete("/api/users/:id", authMiddleware, adminMiddleware, async (req, res) =
 
 function planProgress(plan) {
   let saved = 0;
+  const checked = plan.checked || {};
   plan.grid.forEach((row, r) => row.forEach((amt, c) => {
-    if (plan.checked[`${r}-${c}`]) saved += amt;
+    if (checked[`${r}-${c}`]) saved += amt;
   }));
   const pct = plan.goal ? Math.min(100, Math.round((saved / plan.goal) * 100)) : 0;
   return { saved, pct };
@@ -238,6 +247,10 @@ app.get("/admin.html", (req, res, next) => {
 
 // Block sensitive dirs/files from static serving — do NOT block /api/* routes (handled above)
 const BLOCKED_PATHS = /^\/(data|lib|node_modules)(\/|$)|^\/api\/index\.js$|\/(server\.js|package\.json|package-lock\.json|vercel\.json|\.env)/i;
+
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
 
 app.use((req, res, next) => {
   if (BLOCKED_PATHS.test(req.path)) return res.sendStatus(404);

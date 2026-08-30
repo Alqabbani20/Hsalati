@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "restart": "node scripts/restart.js"
   },
   "engines": {
     "node": "20.x"
