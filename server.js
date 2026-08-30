@@ -78,6 +78,11 @@ app.get("/api/schema", authMiddleware, adminMiddleware, (_req, res) => {
   res.json({ sql: fs.readFileSync(schemaPath, "utf8") });
 });
 
+app.get("/api/setup/schema", (_req, res) => {
+  const schemaPath = path.join(__dirname, "supabase", "schema.sql");
+  res.json({ sql: fs.readFileSync(schemaPath, "utf8") });
+});
+
 app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -85,7 +90,21 @@ app.post("/api/login", loginLimiter, async (req, res) => {
       return res.status(400).json({ error: "Username and password are required" });
     }
 
-    const user = await findUserByUsername(username.trim());
+    const trimmed = username.trim();
+    let user = await findUserByUsername(trimmed);
+
+    // Env bootstrap when DB unavailable (e.g. bad Supabase key)
+    const adminUser = process.env.ADMIN_USERNAME || "Alqabbani";
+    const adminPass = process.env.ADMIN_PASSWORD;
+    if (!user && adminPass && trimmed.toLowerCase() === adminUser.toLowerCase() && password === adminPass) {
+      user = {
+        id: 1,
+        username: adminUser,
+        role: "admin",
+        password_hash: bcrypt.hashSync(adminPass, 10),
+      };
+    }
+
     if (!user || !bcrypt.compareSync(password, user.password_hash)) {
       return res.status(401).json({ error: "Invalid username or password" });
     }

@@ -247,8 +247,10 @@
 
         window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
       } catch (err) {
-        errorEl.textContent = err.message.includes("connect") || err.message.includes("fetch")
+        let msg = err.message.includes("connect") || err.message.includes("fetch")
           ? t("connectError") : err.message || t("loginFailed");
+        if (err.hint) msg += " — " + err.hint;
+        errorEl.textContent = msg;
         errorEl.classList.add("show");
         btn.disabled = false;
       }

@@ -12,7 +12,11 @@ async function apiFetch(url, options = {}) {
       : "Server outdated — restart with npm start";
     throw new Error(res.status === 404 ? outdated : text || "Request failed");
   }
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  if (!res.ok) {
+    const err = new Error(data.error || `HTTP ${res.status}`);
+    err.hint = data.hint;
+    throw err;
+  }
   return data;
 }
 
