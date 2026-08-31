@@ -104,6 +104,11 @@ app.get("/api/setup/patch-gender", (_req, res) => {
   res.json({ sql: fs.readFileSync(patchPath, "utf8") });
 });
 
+app.get("/api/setup/patch-plans", (_req, res) => {
+  const patchPath = path.join(__dirname, "supabase", "patch-plans.sql");
+  res.json({ sql: fs.readFileSync(patchPath, "utf8") });
+});
+
 function publicUser(user) {
   if (!user) return null;
   return {

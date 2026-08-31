@@ -691,12 +691,15 @@
           btn.addEventListener("click", () => resetPassword(Number(btn.dataset.id), btn.dataset.username));
         });
       } catch (err) {
-        const needsPatch = String(err.message || "").includes("disabled_at") || String(err.message || "").includes("gender");
+        const needsPatch = /disabled_at|gender|milestones_shown|color_theme|partials/.test(String(err.message || ""));
         if (needsPatch) {
           document.getElementById("schemaSetup").style.display = "block";
           applySetupLabels();
           try {
-            const res = await fetch("/api/setup/patch-gender");
+            const patchUrl = /milestones|color_theme|partials/.test(String(err.message || ""))
+              ? "/api/setup/patch-plans"
+              : "/api/setup/patch-gender";
+            const res = await fetch(patchUrl);
             const patch = await res.json();
             document.getElementById("schemaSql").value = patch.sql || "";
           } catch {

@@ -17,7 +17,6 @@ create table if not exists public.users (
 create unique index if not exists users_username_lower_idx on public.users (lower(username));
 alter table public.users add column if not exists disabled_at timestamptz;
 alter table public.users add column if not exists gender text check (gender is null or gender in ('male', 'female'));
-alter table public.user_profiles add column if not exists color_theme text check (color_theme is null or color_theme in ('pink', 'blue', 'dark'));
 alter table public.users disable row level security;
 
 -- ========== PART 2: savings_plans ==========
