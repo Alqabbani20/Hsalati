@@ -1,14 +1,16 @@
-const CACHE = "hsalati-v3";
+const CACHE = "hsalati-v4";
 const ASSETS = [
   "/",
   "/index.html",
   "/challenge.html",
   "/admin.html",
   "/dashboard.html",
+  "/login.html",
   "/theme.css",
   "/theme.js",
   "/i18n.js",
   "/auth.js",
+  "/settings.js",
   "/logo-cat.svg",
 ];
 

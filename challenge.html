@@ -13,10 +13,7 @@
   <script src="theme.js"></script>
   <style>
     :root {
-      --pink: #f472b6; --pink-dark: #ec4899; --pink-light: #fce7f3;
-      --pink-soft: #fdf2f8; --pink-muted: #fbcfe8;
-      --text: #1e293b; --text-muted: #64748b; --white: #ffffff;
-      --green: #22c55e; --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
+      --green: #22c55e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -159,7 +156,7 @@
       <span id="userLabel" style="font-size:0.78rem;color:var(--text-muted)"></span>
       <a href="admin.html" id="adminLink" class="btn-sm" style="display:none" data-i18n="admin">Admin</a>
       <button type="button" class="lang-toggle">EN</button>
-      <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
+      <button type="button" class="settings-btn" id="openSettingsBtn" title="Settings">⚙️</button>
       <button id="logoutBtn" data-i18n="logout">Logout</button>
     </div>
   </div>
@@ -253,7 +250,18 @@
 
   <div class="milestone-toast" id="milestoneToast"></div>
 
+  <div class="settings-modal-overlay hidden" id="settingsModal">
+    <div class="settings-modal" role="dialog" aria-labelledby="settingsTitle">
+      <h2 id="settingsTitle" data-i18n="themeSettings">إعدادات المظهر</h2>
+      <p data-i18n="themeSettingsDesc">اختر اللون المناسب — وردي، أزرق، أو داكن</p>
+      <div id="themePicker"></div>
+      <div class="theme-saved" id="themeSavedMsg" data-i18n="themeSaved">تم حفظ المظهر ✓</div>
+      <button type="button" class="settings-modal-close" id="closeSettingsBtn" data-i18n="close">إغلاق</button>
+    </div>
+  </div>
+
   <script src="auth.js"></script>
+  <script src="settings.js"></script>
   <script src="onboarding.js"></script>
   <script>
     const CURRENCY = "KD";
@@ -543,11 +551,31 @@
 
     document.getElementById("logoutBtn").addEventListener("click", logout);
 
+    const settingsModal = document.getElementById("settingsModal");
+    document.getElementById("openSettingsBtn").addEventListener("click", async () => {
+      settingsModal.classList.remove("hidden");
+      await initThemeSettings("themePicker");
+    });
+    document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+      settingsModal.classList.add("hidden");
+    });
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) settingsModal.classList.add("hidden");
+    });
+    document.getElementById("themePicker").addEventListener("click", (e) => {
+      if (e.target.closest(".theme-option")) {
+        const msg = document.getElementById("themeSavedMsg");
+        msg.classList.add("show");
+        setTimeout(() => msg.classList.remove("show"), 2000);
+      }
+    });
+
     document.addEventListener("langchange", () => {
       loadTemplates();
       loadStreak();
       if (plan) showBoard(plan);
       else loadPlansList();
+      if (!settingsModal.classList.contains("hidden")) initThemeSettings("themePicker");
     });
 
     requireAuth().then(user => {

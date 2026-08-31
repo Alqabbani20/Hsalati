@@ -12,16 +12,7 @@
   <script src="theme.js"></script>
   <style>
     :root {
-      --pink: #f472b6;
-      --pink-dark: #ec4899;
-      --pink-light: #fce7f3;
-      --pink-soft: #fdf2f8;
-      --pink-muted: #fbcfe8;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --white: #ffffff;
       --red: #ef4444;
-      --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -155,9 +146,8 @@
 <body>
 
   <div class="card">
-    <div style="position:absolute;top:14px;left:14px;display:flex;gap:8px">
+    <div style="position:absolute;top:14px;left:14px">
       <button type="button" class="lang-toggle">EN</button>
-      <button class="theme-toggle" data-i18n-title="darkMode" title="Dark mode">🌙</button>
     </div>
     <div class="logo-wrap">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -189,12 +179,18 @@
       <button type="button" id="forgotBtn" style="background:none;border:none;color:var(--pink-dark);cursor:pointer;font-size:0.82rem;font-family:inherit" data-i18n="forgotPassword">نسيت كلمة المرور؟</button>
     </p>
 
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-align:center" data-i18n="themeSettings">إعدادات المظهر</p>
+      <div id="loginThemePicker"></div>
+    </div>
+
     <div class="back">
       <a href="index.html" data-i18n="backHome">← العودة للصفحة الرئيسية</a>
     </div>
   </div>
 
   <script src="auth.js"></script>
+  <script src="settings.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const errorEl = document.getElementById("error");
@@ -210,6 +206,9 @@
         window.location.href = user.role === "admin" ? "admin.html" : "challenge.html";
       }
     });
+
+    initThemeSettings("loginThemePicker", { localOnly: true });
+    document.addEventListener("langchange", () => initThemeSettings("loginThemePicker", { localOnly: true }));
 
     document.getElementById("forgotBtn").addEventListener("click", async () => {
       const username = document.getElementById("username").value.trim();
@@ -245,6 +244,15 @@
           body: JSON.stringify({ username, password }),
         });
 
+        const theme = typeof getSavedColorTheme === "function" ? getSavedColorTheme() : "pink";
+        try {
+          await apiFetch("/api/profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ color_theme: theme }),
+          });
+        } catch { /* profile sync optional */ }
+        if (typeof applyColorTheme === "function") applyColorTheme(theme);
         window.location.href = data.user.role === "admin" ? "admin.html" : "challenge.html";
       } catch (err) {
         let msg = err.message.includes("connect") || err.message.includes("fetch")

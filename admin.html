@@ -12,11 +12,6 @@
   <script src="theme.js"></script>
   <style>
     :root {
-      --pink: #f472b6;
-      --pink-dark: #db2777;
-      --pink-light: #fce7f3;
-      --pink-soft: #fdf2f8;
-      --pink-muted: #fbcfe8;
       --admin-font: "IBM Plex Sans", "Cairo", sans-serif;
       --admin-display: "Cairo", "IBM Plex Sans", sans-serif;
       --green: #22c55e;
@@ -34,11 +29,6 @@
     }
 
     [data-theme="dark"] {
-      --pink: #f9a8d4;
-      --pink-dark: #fbcfe8;
-      --pink-light: #3b1f33;
-      --pink-soft: #1e293b;
-      --pink-muted: #475569;
       --success-bg: #14532d;
       --success-text: #bbf7d0;
       --success-border: #166534;
@@ -117,8 +107,43 @@
     }
 
     [data-theme="dark"] .btn-logout {
-      background: #ec4899;
+      background: var(--primary-color);
       color: #fff;
+    }
+
+    .gender-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .gender-filter label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .gender-filter select {
+      padding: 8px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+    }
+
+    .gender-select {
+      padding: 6px 10px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+      min-width: 100px;
     }
 
     .btn-logout:hover { filter: brightness(0.95); }
@@ -191,7 +216,7 @@
     }
 
     .btn-create {
-      background: #ec4899;
+      background: var(--primary-color);
       color: #fff;
       border: none;
       padding: 12px 24px;
@@ -200,7 +225,7 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 35%, transparent);
       transition: filter 0.15s;
       text-decoration: none;
       display: inline-block;
@@ -431,6 +456,15 @@
 
     <div class="card">
       <h2 data-i18n="users">👥 المستخدمون</h2>
+      <div class="gender-filter">
+        <label for="genderFilter" data-i18n="filterByGender">تصفية حسب الجنس</label>
+        <select id="genderFilter">
+          <option value="all" data-i18n="genderAll">الكل</option>
+          <option value="male" data-i18n="genderMale">ذكر</option>
+          <option value="female" data-i18n="genderFemale">أنثى</option>
+          <option value="unset" data-i18n="genderNotSet">غير محدد</option>
+        </select>
+      </div>
       <div id="usersTable">
         <div class="empty" data-i18n="loading">Loading...</div>
       </div>
@@ -446,6 +480,14 @@
   <script>
     let currentUser = null;
     let dbReady = true;
+    let allUsers = [];
+    let genderFilter = "all";
+
+    function genderLabel(gender) {
+      if (gender === "male") return tt("genderMale", "Male");
+      if (gender === "female") return tt("genderFemale", "Female");
+      return tt("genderNotSet", "Not set");
+    }
 
     function tt(key, fallback) {
       return typeof t === "function" ? t(key, fallback) : fallback;
@@ -578,8 +620,15 @@
       }
       try {
         const data = await apiFetch("/api/users");
+        allUsers = data.users;
 
-        if (data.users.length === 0) {
+        const filtered = allUsers.filter((u) => {
+          if (genderFilter === "all") return true;
+          if (genderFilter === "unset") return !u.gender;
+          return u.gender === genderFilter;
+        });
+
+        if (filtered.length === 0) {
           container.innerHTML = `<div class="empty">${tt("noUsers", "No users yet.")}</div>`;
           return;
         }
@@ -590,16 +639,24 @@
               <tr>
                 <th>${tt("colUsername", "Username")}</th>
                 <th>${tt("colRole", "Role")}</th>
+                <th>${tt("colGender", "Gender")}</th>
                 <th>${tt("colStatus", "Status")}</th>
                 <th>${tt("colCreated", "Created")}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              ${data.users.map(u => `
+              ${filtered.map(u => `
                 <tr style="${u.disabled_at ? 'opacity:0.55' : ''}">
                   <td><strong>${escapeHtml(u.username)}</strong></td>
                   <td><span class="badge ${u.role}">${u.role}</span></td>
+                  <td>
+                    <select class="gender-select" data-id="${u.id}" data-username="${escapeHtml(u.username)}" data-prev="${u.gender || ""}">
+                      <option value="" ${!u.gender ? "selected" : ""}>${tt("genderNotSet", "Not set")}</option>
+                      <option value="male" ${u.gender === "male" ? "selected" : ""}>${tt("genderMale", "Male")}</option>
+                      <option value="female" ${u.gender === "female" ? "selected" : ""}>${tt("genderFemale", "Female")}</option>
+                    </select>
+                  </td>
                   <td>${u.disabled_at ? `<span class="badge user">${tt("disabled", "Disabled")}</span>` : "—"}</td>
                   <td>${new Date(u.created_at).toLocaleDateString(getLang() === "ar" ? "ar-KW" : "en")}</td>
                   <td style="display:flex;gap:6px;flex-wrap:wrap">
@@ -616,6 +673,10 @@
             </tbody>
           </table>`;
 
+        container.querySelectorAll(".gender-select").forEach((sel) => {
+          sel.addEventListener("change", () => changeGender(sel));
+        });
+
         container.querySelectorAll(".btn-delete:not(.btn-disable):not(.btn-enable):not(.btn-reset-pw)").forEach((btn) => {
           if (!btn.dataset.username) return;
           btn.addEventListener("click", () => deleteUser(Number(btn.dataset.id), btn.dataset.username));
@@ -630,12 +691,12 @@
           btn.addEventListener("click", () => resetPassword(Number(btn.dataset.id), btn.dataset.username));
         });
       } catch (err) {
-        const needsPatch = String(err.message || "").includes("disabled_at");
+        const needsPatch = String(err.message || "").includes("disabled_at") || String(err.message || "").includes("gender");
         if (needsPatch) {
           document.getElementById("schemaSetup").style.display = "block";
           applySetupLabels();
           try {
-            const res = await fetch("/api/setup/patch");
+            const res = await fetch("/api/setup/patch-gender");
             const patch = await res.json();
             document.getElementById("schemaSql").value = patch.sql || "";
           } catch {
@@ -688,6 +749,38 @@
       loadActivity();
     });
 
+    async function changeGender(selectEl) {
+      const id = Number(selectEl.dataset.id);
+      const username = selectEl.dataset.username;
+      const prev = selectEl.dataset.prev || "";
+      const next = selectEl.value;
+      if (prev === next) return;
+
+      const msg = tt("genderChangeConfirm", "Change {username}'s gender from {from} to {to}?")
+        .replace("{username}", username)
+        .replace("{from}", genderLabel(prev || null))
+        .replace("{to}", genderLabel(next || null));
+
+      if (!confirm(msg)) {
+        selectEl.value = prev;
+        return;
+      }
+
+      try {
+        await apiFetch(`/api/users/${id}/gender`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gender: next || null }),
+        });
+        selectEl.dataset.prev = next;
+        showMsg(tt("genderUpdated", "Gender updated"), "success");
+        loadActivity();
+      } catch (err) {
+        selectEl.value = prev;
+        alert(err.message);
+      }
+    }
+
     async function toggleUser(id, action) {
       try {
         await apiFetch(`/api/users/${id}/${action}`, { method: "PATCH" });
@@ -726,11 +819,12 @@
         }
         container.innerHTML = `
           <table>
-            <thead><tr><th>${tt("colUsername", "Username")}</th><th>Action</th><th>${tt("colCreated", "Created")}</th></tr></thead>
+            <thead><tr><th>${tt("colUsername", "Username")}</th><th>Action</th><th>Details</th><th>${tt("colCreated", "Created")}</th></tr></thead>
             <tbody>${data.activity.map((a) => `
               <tr>
                 <td>${escapeHtml(a.username || "—")}</td>
                 <td><code style="font-size:0.75rem">${escapeHtml(a.action)}</code></td>
+                <td style="font-size:0.75rem;color:var(--text-muted)">${formatActivityDetails(a)}</td>
                 <td>${new Date(a.created_at).toLocaleString(getLang() === "ar" ? "ar-KW" : "en")}</td>
               </tr>`).join("")}
             </tbody>
@@ -777,6 +871,21 @@
         alert(err.message);
       }
     }
+
+    function formatActivityDetails(entry) {
+      const d = entry.details || {};
+      if (entry.action === "gender_changed" && d.targetUsername) {
+        return `${escapeHtml(d.targetUsername)}: ${genderLabel(d.from || null)} → ${genderLabel(d.to || null)}`;
+      }
+      if (d.targetUsername) return escapeHtml(d.targetUsername);
+      if (d.username) return escapeHtml(d.username);
+      return "—";
+    }
+
+    document.getElementById("genderFilter").addEventListener("change", (e) => {
+      genderFilter = e.target.value;
+      loadUsers();
+    });
 
     document.getElementById("logoutBtn").addEventListener("click", logout);
     document.addEventListener("langchange", () => {

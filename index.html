@@ -14,16 +14,7 @@
   <script src="theme.js"></script>
   <style>
     :root {
-      --pink: #f472b6;
-      --pink-dark: #ec4899;
-      --pink-light: #fce7f3;
-      --pink-soft: #fdf2f8;
-      --pink-muted: #fbcfe8;
-      --text: #1e293b;
-      --text-muted: #64748b;
       --white: #ffffff;
-      --shadow: 0 4px 24px rgba(244, 114, 182, 0.12);
-      --shadow-lg: 0 20px 60px rgba(244, 114, 182, 0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1188,6 +1179,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
         });
+        if (typeof applyColorTheme === "function") applyColorTheme(getSavedColorTheme?.() || "pink");
         closeLogin();
         updateNav(data.user);
         loadPhoneData(data.user);

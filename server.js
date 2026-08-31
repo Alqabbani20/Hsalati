@@ -16,6 +16,7 @@ const {
   updateUserPlan,
   deleteUserPlanById,
   updateUserPassword,
+  updateUserGender,
   storageMode,
   isPersistentStorage,
 } = require("./lib/db");
@@ -98,6 +99,21 @@ app.get("/api/setup/patch", (_req, res) => {
   res.json({ sql: fs.readFileSync(patchPath, "utf8") });
 });
 
+app.get("/api/setup/patch-gender", (_req, res) => {
+  const patchPath = path.join(__dirname, "supabase", "patch-gender.sql");
+  res.json({ sql: fs.readFileSync(patchPath, "utf8") });
+});
+
+function publicUser(user) {
+  if (!user) return null;
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    gender: user.gender || null,
+  };
+}
+
 app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -149,7 +165,7 @@ app.post("/api/login", loginLimiter, async (req, res) => {
     const token = signToken(user);
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
     res.json({
-      user: { id: user.id, username: user.username, role: user.role },
+      user: publicUser(user),
       dbWarning: dbError ? (dbError.hint || dbError.message) : undefined,
     });
   } catch (err) {
@@ -167,7 +183,7 @@ app.post("/api/logout", (_req, res) => {
 });
 
 app.get("/api/me", authMiddleware, (req, res) => {
-  res.json({ user: req.user });
+  res.json({ user: publicUser(req.user) });
 });
 
 app.get("/api/users", authMiddleware, adminMiddleware, adminLimiter, async (_req, res) => {
@@ -294,6 +310,7 @@ registerApiRoutes(app, {
   updateUserPlan,
   deleteUserPlanById,
   updateUserPassword,
+  updateUserGender,
   bcrypt,
   signToken,
   COOKIE_NAME,

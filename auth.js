@@ -23,6 +23,7 @@ async function apiFetch(url, options = {}) {
 async function getCurrentUser() {
   try {
     const data = await apiFetch("/api/me");
+    if (typeof initUserTheme === "function") await initUserTheme();
     return data.user;
   } catch {
     return null;
@@ -50,5 +51,6 @@ async function requireAdmin() {
 
 async function logout() {
   await fetch("/api/logout", { method: "POST", credentials: "same-origin" });
+  if (typeof clearColorTheme === "function") clearColorTheme();
   window.location.href = "/login.html";
 }
